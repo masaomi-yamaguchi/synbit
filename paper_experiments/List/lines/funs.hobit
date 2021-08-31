@@ -1,0 +1,24 @@
+lines :: [Char] -> [[Char]]
+lines str = case str of
+  [] -> []
+  ss -> let (xs, rest) = lines_sub ss
+        in xs:lines rest
+
+lines_sub :: [Char] -> ([Char], [Char])
+lines_sub str = case str of
+  []        -> ([], [])
+  '\n':rest -> ([], rest)
+  x:rest    -> let (xs, rest') = lines_sub rest
+               in (x:xs, rest')
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

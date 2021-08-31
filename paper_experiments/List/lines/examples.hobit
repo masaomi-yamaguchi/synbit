@@ -1,0 +1,6 @@
+-- Preserve the last "\n"
+ex1 = ("aa\nbb\ncc", ["aa", "bb"], "aa\nbb")
+
+ex2 = ("aa", ["aa", "bb"], "aa\nbb")
+
+ex3 = ("aa\n", ["aa", "bb"], "aa\nbb\n")

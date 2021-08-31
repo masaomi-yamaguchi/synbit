@@ -1,0 +1,19 @@
+lengthTail :: BX [Nat] -> BX Nat
+lengthTail = \l -> go Z l
+
+go :: Nat -> BX [Nat] -> BX Nat
+go = \acc -> \l -> case* l of
+                       [] ->
+                           !acc
+                           with (\x1 -> eqN x1 acc)
+                           reconciled by (\x0 -> \x1 -> [])
+                       x : xs ->
+                           go (S acc) xs
+                           with (\x1 -> not (eqN acc x1))
+                           reconciled by (\x0 -> \x1 -> Z : x0)
+
+
+-- time                 222.2 ms   (173.4 ms .. 281.6 ms)
+--                      0.979 R²   (0.936 R² .. 1.000 R²)
+-- mean                 229.6 ms   (214.4 ms .. 244.7 ms)
+-- std dev              20.79 ms   (13.92 ms .. 27.79 ms)

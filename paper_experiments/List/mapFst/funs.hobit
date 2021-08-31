@@ -1,0 +1,16 @@
+mapFst :: [(Int, Char)] -> [Int]
+mapFst l = case l of
+  []        -> []
+  (a, b):xs -> a:mapFst xs
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

@@ -1,0 +1,20 @@
+data SP = Student [Char]
+        | Professor [Char]
+
+professor :: [SP] -> [[Char]]
+professor l = case l of
+  [] -> []
+  Professor name:rest -> name:professor rest
+  Student name:rest -> professor rest
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

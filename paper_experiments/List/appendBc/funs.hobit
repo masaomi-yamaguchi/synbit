@@ -1,0 +1,33 @@
+data Nat = Z
+         | S Nat
+
+appendBc :: [Char] -> [Char]
+appendBc l = append l ";;"
+
+append :: [a] -> [a] -> [a]
+append l1 l2 = case l1 of
+  []   -> l2
+  x:xs -> x:append xs l2
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True
+
+length :: [a] -> Nat
+length l = case l of
+  []   -> Z
+  x:xs -> S (length xs)
+
+eqN :: Nat -> Nat -> Bool
+eqN Z Z = True
+eqN Z (S n) = False
+eqN (S n) Z = False
+eqN (S n) (S n') = eqN n n'

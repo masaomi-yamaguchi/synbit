@@ -1,0 +1,11 @@
+q1 :: Tree Lab -> Tree Lab
+q1 t = let (N (E "book") ts) = t
+       in N (E "toc") (q1_section ts)
+
+q1_section :: [Tree Lab] -> [Tree Lab]
+q1_section l = case l of
+  [] -> []
+  (N (A a b) []):rest -> (N (A a b) []):q1_section rest
+  (N (E "title") title):rest -> (N (E "title") title):q1_section rest
+  N (E "section") xs:rest -> (N (E "section") (q1_section xs)):q1_section rest
+  node:rest -> q1_section rest

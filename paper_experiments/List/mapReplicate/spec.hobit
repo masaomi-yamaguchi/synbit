@@ -1,0 +1,7 @@
+#funs = "funs.hobit"
+
+#root = mapReplicate
+
+#nonRoots = map, f, replicate
+
+#examples = "examples.hobit"

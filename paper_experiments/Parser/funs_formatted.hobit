@@ -1,0 +1,10 @@
+pExp :: [Token] -> Exp
+pExp ts = let (e, []) = go ts
+          in e
+
+go :: [Token] -> (Exp, [Token])
+go ts = case ts of
+  TNum x:r -> (ENum x, r)
+  LPar:r1  -> let (e1, RPar:Plus:LPar:r2) = go r1
+                  (e2, RPar:r3) = go r2
+              in (EAdd e1 e2, r3)

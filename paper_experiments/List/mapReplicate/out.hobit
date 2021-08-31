@@ -1,0 +1,47 @@
+mapReplicate :: BX [(Char, Nat)] -> BX [[Char]]
+mapReplicate = \l -> map (\a -> f a) l
+
+f :: BX (a, Nat) -> BX [a]
+f = \xn -> case* xn of
+               (x,n) ->
+                   replicate x n
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+map :: (BX (Char, Nat) -> BX [Char]) -> BX [(Char, Nat)] -> BX [[Char]]
+map = \f -> \l -> case* l of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      x : xs ->
+                          (|f x : map f xs|)
+                          with (\x1 -> case x1 of
+                                           x2 : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           x2 : x3 -> ('a', Z) : x0)
+
+replicate :: BX a -> BX Nat -> BX [a]
+replicate = \x -> \n -> case* n of
+                            Z ->
+                                ![]
+                                with (\x1 -> case x1 of
+                                                 [] -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> Z)
+                            S n' ->
+                                (|x : replicate x n'|)
+                                with (\x1 -> case x1 of
+                                                 x2 : x3 -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> case x1 of
+                                                                 x2 : x3 -> S x0)
+
+
+-- time                 127.7 ms   (112.6 ms .. 136.4 ms)
+--                      0.986 R²   (0.956 R² .. 0.997 R²)
+-- mean                 132.4 ms   (126.2 ms .. 138.6 ms)
+-- std dev              9.574 ms   (7.057 ms .. 13.48 ms)

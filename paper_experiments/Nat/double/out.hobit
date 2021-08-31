@@ -1,0 +1,21 @@
+double :: BX Nat -> BX Nat
+double = \n -> case* n of
+                   Z ->
+                       Z
+                       with (\x1 -> case x1 of
+                                        Z -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> Z)
+                   S n ->
+                       S (S (double n))
+                       with (\x1 -> case x1 of
+                                        S (S x2) -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> case x1 of
+                                                        S (S x2) -> S x0)
+
+
+-- time                 49.53 ms   (37.60 ms .. 64.39 ms)
+--                      0.687 R²   (0.422 R² .. 0.893 R²)
+-- mean                 30.74 ms   (21.83 ms .. 41.84 ms)
+-- std dev              20.36 ms   (15.80 ms .. 30.19 ms)

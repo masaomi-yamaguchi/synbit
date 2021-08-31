@@ -1,0 +1,205 @@
+-- Adding and removing an attr cannot be handled
+--
+-- Removing a figure that is not in the last of its section cannot be handled.
+-- because the change needs branch switch from figure to node, but it will be absorbed by [] case.
+s = N
+  (E "book")
+  [ N (E "title") [N (T "Data on the Web") []]
+  , N (E "author") [N (T "Serge Abiteboul") []]
+  , N (E "author") [N (T "Peter Buneman") []]
+  , N (E "author") [N (T "Dan Suciu") []]
+  , N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Audience") []]
+          , N (E "p") [N (T "Text ... ") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+          , N (E "p") [N (T "Text ... ") []]
+          , N
+              (E "figure")
+              [ N (A "height" "400") []
+              , N (A "width" "400") []
+              , N
+                  (E "title")
+                  [N (T "Traditional client/server architecture") []]
+              , N (E "image") [N (A "source" "csarch.gif") []]]
+          , N (E "p") [N (T "Text ...") []]]]
+  , N
+      (E "section")
+      [ N (A "id" "syntax") []
+      , N (A "difficulty" "medium") []
+      , N (E "title") [N (T "A Syntax For Data") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "figure")
+          [ N (A "height" "200") []
+          , N (A "width" "500") []
+          , N (E "title") [N (T "Graph representations of structures") []]
+          , N (E "image") [N (A "source" "graphs.gif") []]]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Base Types") []]
+          , N (E "p") [N (T "Text ...") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Relational Databases") []]
+          , N (E "p") [N (T "Text") []]
+          , N
+              (E "figure")
+              [ N (A "height" "250") []
+              , N (A "width" "400") []
+              , N (E "title") [N (T "Examples of Relations") []]
+              , N (E "image") [N (A "source" "relatios.gif") []]]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Object Databases") []]
+          , N (E "p") [N (T "Text ... ") []]]]]
+
+v = N
+  (E "toc")
+  [ N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "figcount") [N (Na Z) []]
+      , N
+          (E "section")
+          [N (E "title") [N (T "Audience") []], N (E "figcount") [N (Na Z) []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+          , N (E "figcount") [N (Na (S Z)) []]]]
+  , N
+      (E "section")
+      [ N (A "id" "syntax") []
+      , N (A "difficulty" "medium") []
+      , N (E "title") [N (T "A Syntax For Data") []]
+      , N (E "figcount") [N (Na (S Z)) []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Base Types") []]
+          , N (E "figcount") [N (Na Z) []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Relational Databases") []]
+          , N (E "figcount") [N (Na (S Z)) []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Object Databases") []]
+          , N (E "figcount") [N (Na Z) []]]]]
+
+v1' = N
+  (E "toc")
+  [ N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "figcount") [N (Na Z) []]
+      , N
+          (E "section")
+          [N (E "title") [N (T "Audience") []], N (E "figcount") [N (Na Z) []]]]
+    --   , N
+    --       (E "section")
+    --       [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+    --       , N (E "figcount") [N (Na (S Z)) []]]]
+  , N
+      (E "section")
+      [ N (A "id" "syntax") []
+      , N (A "difficulty" "hard") [] -- hard
+      , N (E "title") [N (T "A Syntax For Data and so on") []] -- renamed
+      , N (E "figcount") [N (Na (S Z)) []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Base Types") []]
+          , N (E "figcount") [N (Na Z) []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Relational Databases") []]
+          , N (E "figcount") [N (Na Z) []]] -- removed
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Object Databases") []]
+          , N (E "figcount") [N (Na (S Z)) []]] -- added
+      , N
+          (E "section")
+          [ N (E "title") [N (T "new title") []]
+          , N (E "figcount") [N (Na Z) []]]] -- added section
+  , N
+      (E "section")
+      [N (E "title") [N (T "new title") []], N (E "figcount") [N (Na Z) []]]] -- added section
+
+s1' = N
+  (E "book")
+  [ N (E "title") [N (T "Data on the Web") []]
+  , N (E "author") [N (T "Serge Abiteboul") []]
+  , N (E "author") [N (T "Peter Buneman") []]
+  , N (E "author") [N (T "Dan Suciu") []]
+  , N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Audience") []]
+          , N (E "p") [N (T "Text ... ") []]]]
+    --   , N
+    --       (E "section")
+    --       [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+    --       , N (E "p") [N (T "Text ... ") []]
+    --       , N
+    --           (E "figure")
+    --           [ N (A "height" "400") []
+    --           , N (A "width" "400") []
+    --           , N
+    --               (E "title")
+    --               [N (T "Traditional client/server architecture") []]
+    --           , N (E "image") [N (A "source" "csarch.gif") []]]
+    --       , N (E "p") [N (T "Text ...") []]]]
+  , N
+      (E "section")
+      [ N (A "id" "syntax") []
+      , N (A "difficulty" "hard") [] -- hard
+      , N (E "title") [N (T "A Syntax For Data and so on") []] -- renamed
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "figure")
+          [ N (A "height" "200") []
+          , N (A "width" "500") []
+          , N (E "title") [N (T "Graph representations of structures") []]
+          , N (E "image") [N (A "source" "graphs.gif") []]]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Base Types") []]
+          , N (E "p") [N (T "Text ...") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Relational Databases") []]
+          , N (E "p") [N (T "Text") []]]
+        --   , N
+        --       (E "figure")
+        --       [ N (A "height" "250") []
+        --       , N (A "width" "400") []
+        --       , N (E "title") [N (T "Examples of Relations") []]
+        --       , N (E "image") [N (A "source" "relatios.gif") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Object Databases") []]
+          , N (E "p") [N (T "Text ... ") []]
+          , N (E "figure") []]
+      , N (E "section") [N (E "title") [N (T "new title") []]]] -- added section
+  , N (E "section") [N (E "title") [N (T "new title") []]]] -- added section
+
+ex1 = (s, v1', s1')

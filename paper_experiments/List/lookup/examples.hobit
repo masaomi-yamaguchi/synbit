@@ -1,0 +1,10 @@
+int2Nat :: Int -> Nat
+int2Nat 0 = Z
+int2Nat n = S (int2Nat (n - 1))
+
+dictionary =
+  [(int2Nat 1, int2Nat 10), (int2Nat 2, int2Nat 200), (int2Nat 3, int2Nat 33)]
+
+ex1 = ((dictionary, int2Nat 2), int2Nat 10, (dictionary, int2Nat 1))
+
+ex2 = ((dictionary, int2Nat 2), int2Nat 33, (dictionary, int2Nat 3))

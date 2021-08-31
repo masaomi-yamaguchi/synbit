@@ -1,0 +1,75 @@
+tokenize :: BX [Char] -> BX [Token]
+tokenize = \cs -> case* cs of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      '(' : cs' ->
+                          (|LPar : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           LPar : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           LPar : x2 -> '(' : x0)
+                      ')' : cs' ->
+                          (|RPar : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           RPar : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           RPar : x2 -> ')' : x0)
+                      '+' : cs' ->
+                          (|Plus : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           Plus : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           Plus : x2 -> '+' : x0)
+                      'Z' : cs' ->
+                          (|TNum Z : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           TNum Z : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           TNum Z : x2 -> 'Z' : x0)
+                      'S' : '(' : cs' ->
+                          case* num cs' of
+                              (n,')' : cs'') ->
+                                  (|TNum (S n) : tokenize cs''|)
+                                  with (\x1 -> True)
+                                  reconciled by (\x0 -> \x1 -> x0)
+                          with (\x1 -> case x1 of
+                                           TNum (S x2) : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           TNum (S x2) : x3 ->
+                                                               'S' : '(' : z : rpar : x0)
+
+num :: BX [Char] -> BX (Nat, [Char])
+num = \cs -> case* cs of
+                 'Z' : cs' ->
+                     (|Z, cs'|)
+                     with (\x1 -> case x1 of
+                                      (Z,x2) -> True
+                                      _ -> False)
+                     reconciled by (\x0 -> \x1 -> case x1 of
+                                                      (Z,x2) -> 'Z' : x0)
+                 'S' : '(' : cs' ->
+                     case* num cs' of
+                         (n,')' : cs'') ->
+                             (|S n, cs''|)
+                             with (\x1 -> True)
+                             reconciled by (\x0 -> \x1 -> x0)
+                     with (\x1 -> case x1 of
+                                      (S x2,x3) -> True
+                                      _ -> False)
+                     reconciled by (\x0 -> \x1 -> case x1 of
+                                                      (S x2,x3) -> 'S' : '(' : x0)
+
+
+-- time                 94.44 ms   (73.91 ms .. 115.1 ms)
+--                      0.938 R²   (0.898 R² .. 0.996 R²)
+-- mean                 84.88 ms   (80.26 ms .. 91.86 ms)
+-- std dev              9.882 ms   (5.937 ms .. 14.83 ms)

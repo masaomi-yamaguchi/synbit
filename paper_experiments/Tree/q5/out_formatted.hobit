@@ -1,0 +1,115 @@
+q5 :: BX (Tree Lab) -> BX (Tree Lab)
+q5 = \t -> case* t of
+               N (E "book") ts ->
+                   case* q5_book ts of
+                       ts' ->
+                           N (E (| "section-list" |)) ts'
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+append :: BX [a] -> BX [a] -> BX [a]
+append = \l1 -> \l2 -> case* l1 of
+                           [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> True
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x0)
+
+q5_book :: BX [Tree Lab] -> BX [Tree Lab]
+q5_book = \l -> case* l of
+                    [] ->
+                        ![]
+                        with (\x1 -> case x1 of
+                                         [] -> True
+                                         _ -> False)
+                        reconciled by (\x0 -> \x1 -> [])
+                    N (E "section") xs : rest ->
+                        case* q5_section xs of
+                            (xs',title,n) ->
+                                case* q5_book rest of
+                                    rest' ->
+                                        (|N (E (| "" |)) (| [
+                                                     N (A (| "title" |) title) ![],
+                                                     N (AN (| "figcount" |) n) ![]
+                                                     ] |) : append xs' rest'|)
+                                        with (\x1 -> True)
+                                        reconciled by (\x0 -> \x1 -> x0)
+                                with (\x1 -> True)
+                                reconciled by (\x0 -> \x1 -> x0)
+                        with (\x1 -> case x1 of
+                                         N (E "section") [N (A "title" x2) [],
+                                                          N (AN "figcount" x3) []] : x4 ->
+                                             True
+                                         _ -> False)
+                        reconciled by (\x0 -> \x1 -> case x1 of
+                                                         N (E "section") [N (A "title" x2) [],
+                                                                          N (AN "figcount" x3) []] : x4 ->
+                                                             x0)
+                    node : rest ->
+                        q5_book rest
+                        with (\x1 -> True)
+                        reconciled by (\x0 -> \x1 -> x0)
+
+q5_section :: BX [Tree Lab] -> BX ([Tree Lab], [Char], Nat)
+q5_section = \l -> case* l of
+                       [] ->
+                           (|![], ![], Z|)
+                           with (\x1 -> case x1 of
+                                            ([],[],Z) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           case* q5_section xs of
+                               (xs',title,n) ->
+                                   case* q5_section rest of
+                                       (rest',_,rest_n) ->
+                                           (|(|N (E (| "section" |)) (| [
+                                                          N (A (| "title" |) title) ![],
+                                                          N (AN (| "figcount" |) n) ![]
+                                                          ] |) : append xs' rest'|),
+                                             ![],
+                                             rest_n|)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (N (E "section") [N (A "title" x2) [],
+                                                              N (AN "figcount" x3) []] : x4,[],x5) ->
+                                                True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (N (E "section") [N (A "title" x2) [],
+                                                                              N (AN "figcount" x3) []] : x4,[],x5) ->
+                                                                x0)
+                       N (E "figure") fig : rest ->
+                           case* q5_section rest of
+                               (rest',_,n) ->
+                                   (|rest', ![], S n|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,[],S x3) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,[],S x3) -> N (E "figure") x0 : x0)
+                       N (E "title") [N (T title) []] : rest ->
+                           case* q5_section rest of
+                               (rest',_,n) ->
+                                   (|rest', title, n|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,x3,x4) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,x3,x4) -> x0)
+                       node : rest ->
+                           q5_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)

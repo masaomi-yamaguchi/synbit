@@ -1,0 +1,107 @@
+q6 :: BX (Tree Lab) -> BX (Tree Lab)
+q6 = \t -> case* t of
+               N (E "book") ts ->
+                   case* q6_section ts of
+                       (ts',n) ->
+                           N (E (| [ !'t', !'o', !'c' ] |)) ts'
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+append :: BX [a] -> BX [a] -> BX [a]
+append = \l1 -> \l2 -> case* l1 of
+                           [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> True
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x0)
+
+q6_find_title_attr :: BX [Tree Lab] -> BX ([Tree Lab], [Tree Lab])
+q6_find_title_attr = \l -> case* l of
+                               N (A a b) [] : rest ->
+                                   case* q6_find_title_attr rest of
+                                       (ta,rest') ->
+                                           (|(|N (A a b) ![] : ta|), rest'|)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> case x1 of
+                                                    (N (A x2 x3) [] : x4,x5) -> True
+                                                    _ -> False)
+                                   reconciled by (\x0 -> \x1 -> case x1 of
+                                                                    (N (A x2 x3) [] : x4,x5) -> x0)
+                               N (E "title") title : rest ->
+                                   (|(| [ N (E (| [ !'t', !'i', !'t', !'l', !'e' ] |)) title ] |),
+                                     rest|)
+                                   with (\x1 -> case x1 of
+                                                    ([N (E "title") x2],x3) -> True
+                                                    _ -> False)
+                                   reconciled by (\x0 -> \x1 -> case x1 of
+                                                                    ([N (E "title") x2],x3) -> x0)
+
+q6_section :: BX [Tree Lab] -> BX ([Tree Lab], Nat)
+q6_section = \l -> case* l of
+                       [] ->
+                           (|![], Z|)
+                           with (\x1 -> case x1 of
+                                            ([],Z) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           case* q6_find_title_attr xs of
+                               (title_attr,xs') ->
+                                   case* q6_section xs' of
+                                       (xs'',n1) ->
+                                           case* q6_section rest of
+                                               (rest',n2) ->
+                                                   (|(|N (E (| [
+                                                            !'s', !'e', !'c', !'t', !'i', !'o', !'n'
+                                                            ] |)) (append title_attr (|(N (E (| [
+                                                                                             !'f',
+                                                                                             !'i',
+                                                                                             !'g',
+                                                                                             !'c',
+                                                                                             !'o',
+                                                                                             !'u',
+                                                                                             !'n',
+                                                                                             !'t'
+                                                                                             ] |)) (| [
+                                                                                                   N (Na n1) ![]
+                                                                                                   ] |) : xs'')|)) : rest'|),
+                                                     n2|)
+                                                   with (\x1 -> True)
+                                                   reconciled by (\x0 -> \x1 -> x0)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (N (E "section") x2 : x3,x4) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (N (E "section") x2 : x3,x4) ->
+                                                                N (E "section") (N (E title) x0 : x0) : x0)
+                       N (E "figure") fig : rest ->
+                           case* q6_section rest of
+                               (rest',n) ->
+                                   (|rest', S n|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,S x3) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,S x3) -> N (E "figure") x0 : x0)
+                       node : rest ->
+                           q6_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+
+
+-- time                 10.30 s    (9.030 s .. 11.36 s)
+--                      0.998 R²   (0.994 R² .. 1.000 R²)
+-- mean                 10.49 s    (10.15 s .. 10.88 s)
+-- std dev              416.0 ms   (197.2 ms .. 580.4 ms)

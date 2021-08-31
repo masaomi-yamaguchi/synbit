@@ -1,0 +1,19 @@
+-- This is a specification file for synthesis.
+-- You need to put this file in the same directory as the files that function and examples are written.
+-- The order of #funs, #roots, #nonRoots #examples are fixed.
+--
+-- Specify the file that functions and data structures are written.
+#funs = "funs.hobit"
+
+-- Specify the name of root function.
+#root = append
+
+-- List the name of functions that is not the root function and may be bidirectional.
+-- If you want to declare 2 or more functions,
+-- you can write as "NonRoots = f1, f2, f3, ..."
+-- If you have no function for here, write "NonRoots = "
+-- The functions that are not specified in both #root and #nonRoots are treated as components for synthesis.
+#nonRoots = append_
+
+-- Specify the file that examples are written.
+#examples = "examples.hobit"

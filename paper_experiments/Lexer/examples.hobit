@@ -1,0 +1,22 @@
+ex1 = ("S(S(S(Z)))", [TNum (S (S Z))], "S(S(Z))")
+
+ex2 = ("((S(S(Z)))+(Z))+(S(Z))", [TNum Z], "Z")
+
+-- v3 = tokenize "((S(S(Z)))+(Z))+(S(Z))"
+v3 = [ LPar
+     , LPar
+     , TNum (S (S Z))
+     , RPar
+     , Plus
+     , LPar
+     , TNum Z
+     , RPar
+     , RPar
+     , Plus
+     , LPar
+     , TNum (S Z)
+     , RPar]
+
+ex3 = ("Z", v3, "((S(S(Z)))+(Z))+(S(Z))")
+
+ex4 = ("Z", [TNum (S (S Z))], "S(S(Z))")

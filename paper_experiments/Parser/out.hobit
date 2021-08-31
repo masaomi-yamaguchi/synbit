@@ -1,0 +1,35 @@
+pExp :: BX [Token] -> BX Exp
+pExp = \ts -> case* go ts of
+                  (e,[]) -> e with (\x1 -> True) reconciled by (\x0 -> \x1 -> x0)
+
+go :: BX [Token] -> BX (Exp, [Token])
+go = \ts -> case* ts of
+                TNum x : r ->
+                    (|ENum x, r|)
+                    with (\x1 -> case x1 of
+                                     (ENum x2,x3) -> True
+                                     _ -> False)
+                    reconciled by (\x0 -> \x1 -> case x1 of
+                                                     (ENum x2,x3) -> TNum x2 : x0)
+                LPar : r1 ->
+                    case* go r1 of
+                        (e1,RPar : Plus : LPar : r2) ->
+                            case* go r2 of
+                                (e2,RPar : r3) ->
+                                    (|EAdd e1 e2, r3|)
+                                    with (\x1 -> True)
+                                    reconciled by (\x0 -> \x1 -> x0)
+                            with (\x1 -> True)
+                            reconciled by (\x0 -> \x1 -> x0)
+                    with (\x1 -> case x1 of
+                                     (EAdd x2 x3,x4) -> True
+                                     _ -> False)
+                    reconciled by (\x0 -> \x1 -> case x1 of
+                                                     (EAdd x2 x3,x4) ->
+                                                         LPar : TNum Z : RPar : Plus : LPar : TNum Z : RPar : x0)
+
+
+-- time                 553.7 ms   (407.9 ms .. 668.1 ms)
+--                      0.992 R²   (0.972 R² .. 1.000 R²)
+-- mean                 499.5 ms   (451.1 ms .. 519.1 ms)
+-- std dev              35.75 ms   (14.59 ms .. 45.18 ms)

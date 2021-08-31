@@ -1,0 +1,42 @@
+q1 :: BX (Tree Lab) -> BX (Tree Lab)
+q1 = \t -> case* t of
+               N (E "book") ts ->
+                   N (E (| "toc" |)) (q1_section ts)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+q1_section :: BX [Tree Lab] -> BX [Tree Lab]
+q1_section = \l -> case* l of
+                       [] ->
+                           ![]
+                           with (\x1 -> case x1 of
+                                            [] -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (A a b) [] : rest ->
+                           (|N (A a b) ![] : q1_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (A x2 x3) [] : x4 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (A x2 x3) [] : x4 ->
+                                                                N (A x2 x2) [] : x0)
+                       N (E "title") title : rest ->
+                           (|N (E (| "title" |)) title : q1_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (E "title") x2 : x3 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (E "title") x2 : x3 -> x0)
+                       N (E "section") xs : rest ->
+                           (|N (E (| [ "section"  ] |)) (q1_section xs) : q1_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (E "section") x2 : x3 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (E "section") x2 : x3 ->
+                                                                N (E "section") x2 : x0)
+                       node : rest ->
+                           q1_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)

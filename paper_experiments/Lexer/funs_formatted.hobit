@@ -1,0 +1,15 @@
+tokenize :: [Char] -> [Token]
+tokenize cs = case cs of
+  []          -> []
+  '(':cs'     -> LPar:tokenize cs'
+  ')':cs'     -> RPar:tokenize cs'
+  '+':cs'     -> Plus:tokenize cs'
+  'Z':cs'     -> TNum Z:tokenize cs'
+  'S':'(':cs' -> let (n, ')':cs'') = num cs'
+                 in (TNum (S n):tokenize cs'')
+
+num :: [Char] -> (Nat, [Char])
+num cs = case cs of
+  'Z':cs'     -> (Z, cs')
+  'S':'(':cs' -> let (n, ')':cs'') = num cs'
+                 in (S n, cs'')

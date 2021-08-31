@@ -1,0 +1,7 @@
+#funs = "funs.hobit"
+
+#root = q3
+
+#nonRoots = q3_book, q3_book, q3_section, add
+
+#examples = "examples.hobit"

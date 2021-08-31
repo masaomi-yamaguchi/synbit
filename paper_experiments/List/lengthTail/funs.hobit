@@ -1,0 +1,29 @@
+data Nat = Z
+         | S Nat
+
+lengthTail :: [Nat] -> Nat
+lengthTail l = go Z l
+
+go :: Nat -> [Nat] -> Nat
+go acc l = case l of
+  []   -> acc
+  x:xs -> go (S acc) xs
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True
+
+eqN :: Nat -> Nat -> Bool
+eqN Z Z = True
+eqN Z (S n) = False
+eqN (S n) Z = False
+eqN (S n) (S n') = eqN n n'
+
+not :: Bool -> Bool
+not True = False
+not False = True
+

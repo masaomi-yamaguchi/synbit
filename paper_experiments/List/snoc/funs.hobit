@@ -1,0 +1,20 @@
+snoc :: ([a], a) -> [a]
+snoc p = let (xs, a) = p
+         in snoc_ xs a
+
+snoc_ :: [a] -> a -> [a]
+snoc_ zs a = case zs of
+  []   -> [a]
+  x:xs -> x:snoc_ xs a
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

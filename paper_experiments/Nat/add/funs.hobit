@@ -1,0 +1,27 @@
+data Nat = Z
+         | S Nat
+
+-- add :: (Nat, Nat) -> Nat
+-- add p = case p of
+--   (Z, n)    -> n
+--   (S m', n) -> S (add (m', n))
+add :: (Nat, Nat) -> Nat
+add p = let (m, n) = p
+        in add_ m n
+
+add_ :: Nat -> Nat -> Nat
+add_ m n = case m of
+  Z    -> n
+  S m' -> S (add_ m' n)
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

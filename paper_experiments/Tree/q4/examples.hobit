@@ -1,0 +1,162 @@
+s = N
+  (E "book")
+  [ N (E "title") [N (T "Data on the Web") []]
+  , N (E "author") [N (T "Serge Abiteboul") []]
+  , N (E "author") [N (T "Peter Buneman") []]
+  , N (E "author") [N (T "Dan Suciu") []]
+  , N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Audience") []]
+          , N (E "p") [N (T "Text ... ") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+          , N (E "p") [N (T "Text ... ") []]
+          , N
+              (E "figure")
+              [ N (A "height" "400") []
+              , N (A "width" "400") []
+              , N
+                  (E "title")
+                  [N (T "Traditional client/server architecture") []]
+              , N (E "image") [N (A "source" "csarch.gif") []]]
+          , N (E "p") [N (T "Text ...") []]]]
+  , N
+      (E "section")
+      [ N (A "id" "syntax") []
+      , N (A "difficulty" "medium") []
+      , N (E "title") [N (T "A Syntax For Data") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "figure")
+          [ N (A "height" "200") []
+          , N (A "width" "500") []
+          , N (E "title") [N (T "Graph representations of structures") []]
+          , N (E "image") [N (A "source" "graphs.gif") []]]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Base Types") []]
+          , N (E "p") [N (T "Text ...") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Relational Databases") []]
+          , N (E "p") [N (T "Text") []]
+          , N
+              (E "figure")
+              [ N (A "height" "250") []
+              , N (A "width" "400") []
+              , N (E "title") [N (T "Examples of Relations") []]
+              , N (E "image") [N (A "source" "relatios.gif") []]]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Object Databases") []]
+          , N (E "p") [N (T "Text ... ") []]]]]
+
+v = N (E "top_section_count") [N (Na (S (S Z))) []]
+
+v1' = N (E "top_section_count") [N (Na (S Z)) []] -- removed 1
+
+s1' = N
+  (E "book")
+  [ N (E "title") [N (T "Data on the Web") []]
+  , N (E "author") [N (T "Serge Abiteboul") []]
+  , N (E "author") [N (T "Peter Buneman") []]
+  , N (E "author") [N (T "Dan Suciu") []]
+  , N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Audience") []]
+          , N (E "p") [N (T "Text ... ") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+          , N (E "p") [N (T "Text ... ") []]
+          , N
+              (E "figure")
+              [ N (A "height" "400") []
+              , N (A "width" "400") []
+              , N
+                  (E "title")
+                  [N (T "Traditional client/server architecture") []]
+              , N (E "image") [N (A "source" "csarch.gif") []]]
+          , N (E "p") [N (T "Text ...") []]]]] -- last section was removed
+
+ex1 = (s, v1', s1')
+
+v2' = N (E "top_section_count") [N (Na (S (S (S Z)))) []] -- added 1
+
+s2' = N
+  (E "book")
+  [ N (E "title") [N (T "Data on the Web") []]
+  , N (E "author") [N (T "Serge Abiteboul") []]
+  , N (E "author") [N (T "Peter Buneman") []]
+  , N (E "author") [N (T "Dan Suciu") []]
+  , N
+      (E "section")
+      [ N (A "id" "intro") []
+      , N (A "difficulty" "easy") []
+      , N (E "title") [N (T "Introduction") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Audience") []]
+          , N (E "p") [N (T "Text ... ") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Web Data and the Two Cultures") []]
+          , N (E "p") [N (T "Text ... ") []]
+          , N
+              (E "figure")
+              [ N (A "height" "400") []
+              , N (A "width" "400") []
+              , N
+                  (E "title")
+                  [N (T "Traditional client/server architecture") []]
+              , N (E "image") [N (A "source" "csarch.gif") []]]
+          , N (E "p") [N (T "Text ...") []]]]
+  , N
+      (E "section")
+      [ N (A "id" "syntax") []
+      , N (A "difficulty" "medium") []
+      , N (E "title") [N (T "A Syntax For Data") []]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "figure")
+          [ N (A "height" "200") []
+          , N (A "width" "500") []
+          , N (E "title") [N (T "Graph representations of structures") []]
+          , N (E "image") [N (A "source" "graphs.gif") []]]
+      , N (E "p") [N (T "Text ... ") []]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Base Types") []]
+          , N (E "p") [N (T "Text ...") []]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Relational Databases") []]
+          , N (E "p") [N (T "Text") []]
+          , N
+              (E "figure")
+              [ N (A "height" "250") []
+              , N (A "width" "400") []
+              , N (E "title") [N (T "Examples of Relations") []]
+              , N (E "image") [N (A "source" "relatios.gif") []]]]
+      , N
+          (E "section")
+          [ N (E "title") [N (T "Representing Object Databases") []]
+          , N (E "p") [N (T "Text ... ") []]]]
+  , N (E "section") []] -- added
+
+ex2 = (s, v2', s2')

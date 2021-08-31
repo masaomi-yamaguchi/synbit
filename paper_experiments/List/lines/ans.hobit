@@ -1,0 +1,46 @@
+-- We cannot synthesis bidirectional lines_root that preserves the last "\n"
+
+-- we need to propagate the information of the last "\n"
+linesB_root :: BX String -> BX [String]
+linesB_root str =
+  case* str of
+    str' | last_is_NL str' -> linesB True str'
+                              with (\_ -> True)
+                              reconciled by (\s v -> "\n")
+    str' | otherwise       -> linesB False str'
+                              with (\v -> True)
+                              reconciled by (\s v -> "")
+
+linesB :: Bool -> BX String -> BX [String]
+linesB d str =
+  case* str of
+    [] -> []
+          with null
+          reconciled by (\_ _ -> [])
+    ss -> (let* (xs, rest) = lines_subB d ss
+           in
+             xs : linesB d rest)
+          with not . null
+          reconciled by (\str ans -> if d then "\n" else " ")
+
+lines_subB :: Bool -> BX String -> BX (String, String)
+lines_subB d str =
+  case* str of
+    [] -> ([], [])
+          with (\(l1, l2) -> andAlso (null l1) (null l2))
+          reconciled by (\str ([],[]) -> [])
+    '\n' : rest -> ([], rest)
+                   with (\(l1, l2) -> if d
+                                      then null l1
+                                      else andAlso (null l1) (not (null l2)))
+                   reconciled by (\str ([], rest) -> "\n")
+    x : rest -> (let* (xs, rest') = lines_subB d rest
+                  in (x:xs, rest'))
+                with (\(l1, l2) -> not (null l1))
+                reconciled by (\str (s1, s2) -> if d then " \n" else " ")
+
+last_is_NL :: String -> Bool
+last_is_NL s = case s of
+  []        -> False
+  '\n' : [] -> True
+  x    : xs -> last_is_NL xs

@@ -1,0 +1,31 @@
+data Nat = Z
+         | S Nat
+
+mapReplicate :: [(Char, Nat)] -> [[Char]]
+mapReplicate l = map (\a -> f a) l
+
+map :: ((Char, Nat) -> [Char]) -> [(Char, Nat)] -> [[Char]]
+map f l = case l of
+  []   -> []
+  x:xs -> f x:map f xs
+
+f :: (a, Nat) -> [a]
+f xn = let (x, n) = xn
+       in replicate x n
+
+replicate :: a -> Nat -> [a]
+replicate x n = case n of
+  Z    -> []
+  S n' -> x:replicate x n'
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

@@ -1,0 +1,23 @@
+append :: BX ([a], [a]) -> BX [a]
+append = \l -> case* l of
+                   (l1,l2) ->
+                       append_ l1 l2
+                       with (\x1 -> True)
+                       reconciled by (\x0 -> \x1 -> x0)
+
+append_ :: BX [a] -> BX [a] -> BX [a]
+append_ = \l1 -> \l2 -> case* l1 of
+                            [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                            x : xs ->
+                                (|x : append_ xs l2|)
+                                with (\x1 -> case x1 of
+                                                 x2 : x3 -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> case x1 of
+                                                                 x2 : x3 -> x0)
+
+
+-- time                 34.13 ms   (14.83 ms .. 46.90 ms)
+--                      0.661 R²   (0.421 R² .. 0.840 R²)
+-- mean                 41.21 ms   (34.37 ms .. 47.76 ms)
+-- std dev              13.83 ms   (11.92 ms .. 15.78 ms)

@@ -1,0 +1,7 @@
+#funs = "funs.hobit"
+
+#root = q2
+
+#nonRoots = q2_section, q2_fig_title_attr, append
+
+#examples = "examples.hobit"

@@ -1,0 +1,5 @@
+-- If length is increased,
+-- add "Z" to the list
+ex1 = ([S Z, S (S Z)], (S (S (S (S Z)))), [S Z, S (S Z), Z, Z])
+
+ex2 = ([S (S Z), Z], S Z, [S (S Z)])

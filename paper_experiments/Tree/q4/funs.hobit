@@ -1,0 +1,31 @@
+data Tree a = N a [Tree a] -- polymorphic tree type
+
+data Nat = Z
+         | S Nat
+
+data Lab = A [Char] [Char] -- Attribute
+         | T [Char] -- Text
+         | E [Char] -- Element
+         | Na Nat
+
+q4 :: Tree Lab -> Tree Lab
+q4 t = let (N (E "book") ts) = t
+       in N (E "top_section_count") [N (Na (q4_book ts)) []]
+
+q4_book :: [Tree Lab] -> Nat
+q4_book l = case l of
+  [] -> Z
+  N (E "section") xs:rest -> S (q4_book rest)
+  node:rest -> q4_book rest
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

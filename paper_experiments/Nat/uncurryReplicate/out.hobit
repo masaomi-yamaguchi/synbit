@@ -1,0 +1,28 @@
+uncurryReplicate :: BX (a, Nat) -> BX [a]
+uncurryReplicate = \p -> case* p of
+                             (x,n) ->
+                                 replicate x n
+                                 with (\x1 -> True)
+                                 reconciled by (\x0 -> \x1 -> x0)
+
+replicate :: BX a -> BX Nat -> BX [a]
+replicate = \x -> \n -> case* n of
+                            Z ->
+                                ![]
+                                with (\x1 -> case x1 of
+                                                 [] -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> Z)
+                            S n' ->
+                                (|x : replicate x n'|)
+                                with (\x1 -> case x1 of
+                                                 x2 : x3 -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> case x1 of
+                                                                 x2 : x3 -> S x0)
+
+
+-- time                 50.05 ms   (34.53 ms .. 68.74 ms)
+--                      0.686 R²   (0.477 R² .. 0.882 R²)
+-- mean                 31.63 ms   (24.84 ms .. 43.88 ms)
+-- std dev              18.80 ms   (13.00 ms .. 28.64 ms)

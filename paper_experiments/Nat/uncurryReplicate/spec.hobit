@@ -1,0 +1,7 @@
+#funs = "funs.hobit"
+
+#root = uncurryReplicate
+
+#nonRoots = replicate
+
+#examples = "examples.hobit"

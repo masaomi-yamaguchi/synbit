@@ -1,0 +1,9 @@
+-- This is a file for examples.
+-- An example is a tuple that stands for (source, updated view, updated source)
+-- The head of the name of an example must be 'ex'
+--
+-- You can use all functions and constructors defined in funs.hobit or examples.hobit
+-- All examples are reduced to values before BX-synthesis
+ex1 = (([1, 2, 3, 4], [5]), [6, 2], ([6, 2], []))
+
+ex2 = (([1, 2, 3, 4], [5]), [1, 2, 3, 4, 5, 6], ([1, 2, 3, 4], [5, 6]))

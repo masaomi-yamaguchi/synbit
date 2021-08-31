@@ -1,0 +1,42 @@
+data Tree a = N a [Tree a] -- polymorphic tree type
+
+data Nat = Z
+         | S Nat
+
+data Lab = A [Char] [Char] -- Attribute
+         | T [Char] -- Text
+         | E [Char] -- Element
+         | Na Nat
+
+q3 :: Tree Lab -> [Tree Lab]
+q3 t = let (N (E "book") ts) = t
+           (sec, fig) = q3_section ts
+       in [ N (E "section_count") [N (Na sec) []]
+          , N (E "figure_count") [N (Na fig) []]]
+
+q3_section :: [Tree Lab] -> (Nat, Nat)
+q3_section l = case l of
+  [] -> (Z, Z)
+  N (E "section") xs:rest -> let (sec1, fig1) = q3_section xs
+                                 (sec2, fig2) = q3_section rest
+                             in (S (add sec1 sec2), add fig1 fig2)
+  N (E "figure") title:rest -> let (sec, fig) = q3_section rest
+                               in (sec, S fig)
+  node:rest -> q3_section rest
+
+add :: Nat -> Nat -> Nat
+add a b = case a of
+  Z    -> b
+  S a' -> S (add a' b)
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

@@ -1,0 +1,1554 @@
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Lexer/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Lexer/funs.hobit"
+#root = tokenize
+#nonRoots = [num]
+#examples = "/home/masaomi/hibx/paper_experiments/./Lexer/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Lexer/funs.hobit>
+andAlso  :: Bool -> Bool -> Bool
+not      :: Bool -> Bool
+num      :: [Char] -> (Nat, [Char])
+orElse   :: Bool -> Bool -> Bool
+rpar     :: Char
+tokenize :: [Char] -> [Token]
+z        :: Char
+Ok.
+AST node size of #root and #nonRoots: 88
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Lexer/spec.hobit"
+*******************************************************************
+tokenize :: BX [Char] -> BX [Token]
+tokenize = \cs -> case* cs of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      '(' : cs' ->
+                          (|LPar : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           LPar : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           LPar : x2 -> '(' : x0)
+                      ')' : cs' ->
+                          (|RPar : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           RPar : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           RPar : x2 -> ')' : x0)
+                      '+' : cs' ->
+                          (|Plus : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           Plus : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           Plus : x2 -> '+' : x0)
+                      'Z' : cs' ->
+                          (|TNum Z : tokenize cs'|)
+                          with (\x1 -> case x1 of
+                                           TNum Z : x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           TNum Z : x2 -> 'Z' : x0)
+                      'S' : '(' : cs' ->
+                          case* num cs' of
+                              (n,')' : cs'') ->
+                                  (|TNum (S n) : tokenize cs''|)
+                                  with (\x1 -> True)
+                                  reconciled by (\x0 -> \x1 -> x0)
+                          with (\x1 -> case x1 of
+                                           TNum (S x2) : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           TNum (S x2) : x3 ->
+                                                               'S' : '(' : z : rpar : x0)
+
+num :: BX [Char] -> BX (Nat, [Char])
+num = \cs -> case* cs of
+                 'Z' : cs' ->
+                     (|Z, cs'|)
+                     with (\x1 -> case x1 of
+                                      (Z,x2) -> True
+                                      _ -> False)
+                     reconciled by (\x0 -> \x1 -> case x1 of
+                                                      (Z,x2) -> 'Z' : x0)
+                 'S' : '(' : cs' ->
+                     case* num cs' of
+                         (n,')' : cs'') ->
+                             (|S n, cs''|)
+                             with (\x1 -> True)
+                             reconciled by (\x0 -> \x1 -> x0)
+                     with (\x1 -> case x1 of
+                                      (S x2,x3) -> True
+                                      _ -> False)
+                     reconciled by (\x0 -> \x1 -> case x1 of
+                                                      (S x2,x3) -> 'S' : '(' : x0)
+
+
+AST node size of output: 265
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Lexer/spec.hobit"
+*******************************************************************
+CPU time:   0.05s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Parser/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Parser/funs.hobit"
+#root = pExp
+#nonRoots = [go]
+#examples = "/home/masaomi/hibx/paper_experiments/./Parser/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Parser/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+go      :: [Token] -> (Exp, [Token])
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+pExp    :: [Token] -> Exp
+Ok.
+AST node size of #root and #nonRoots: 45
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Parser/spec.hobit"
+*******************************************************************
+pExp :: BX [Token] -> BX Exp
+pExp = \ts -> case* go ts of
+                  (e,[]) -> e with (\x1 -> True) reconciled by (\x0 -> \x1 -> x0)
+
+go :: BX [Token] -> BX (Exp, [Token])
+go = \ts -> case* ts of
+                TNum x : r ->
+                    (|ENum x, r|)
+                    with (\x1 -> case x1 of
+                                     (ENum x2,x3) -> True
+                                     _ -> False)
+                    reconciled by (\x0 -> \x1 -> case x1 of
+                                                     (ENum x2,x3) -> TNum x2 : x0)
+                LPar : r1 ->
+                    case* go r1 of
+                        (e1,RPar : Plus : LPar : r2) ->
+                            case* go r2 of
+                                (e2,RPar : r3) ->
+                                    (|EAdd e1 e2, r3|)
+                                    with (\x1 -> True)
+                                    reconciled by (\x0 -> \x1 -> x0)
+                            with (\x1 -> True)
+                            reconciled by (\x0 -> \x1 -> x0)
+                    with (\x1 -> case x1 of
+                                     (EAdd x2 x3,x4) -> True
+                                     _ -> False)
+                    reconciled by (\x0 -> \x1 -> case x1 of
+                                                     (EAdd x2 x3,x4) ->
+                                                         LPar : TNum Z : RPar : Plus : LPar : TNum Z : RPar : x0)
+
+
+AST node size of output: 121
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Parser/spec.hobit"
+*******************************************************************
+CPU time:   0.46s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Nat/double/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Nat/double/funs.hobit"
+#root = double
+#nonRoots = []
+#examples = "/home/masaomi/hibx/paper_experiments/./Nat/double/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Nat/double/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+double  :: Nat -> Nat
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 13
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Nat/double/spec.hobit"
+*******************************************************************
+double :: BX Nat -> BX Nat
+double = \n -> case* n of
+                   Z ->
+                       Z
+                       with (\x1 -> case x1 of
+                                        Z -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> Z)
+                   S n ->
+                       S (S (double n))
+                       with (\x1 -> case x1 of
+                                        S (S x2) -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> case x1 of
+                                                        S (S x2) -> S x0)
+
+
+AST node size of output: 43
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Nat/double/spec.hobit"
+*******************************************************************
+CPU time:   0.01s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Nat/add/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Nat/add/funs.hobit"
+#root = add
+#nonRoots = [add_]
+#examples = "/home/masaomi/hibx/paper_experiments/./Nat/add/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Nat/add/funs.hobit>
+add     :: (Nat, Nat) -> Nat
+add_    :: Nat -> Nat -> Nat
+andAlso :: Bool -> Bool -> Bool
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 26
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Nat/add/spec.hobit"
+*******************************************************************
+add :: BX (Nat, Nat) -> BX Nat
+add = \p -> case* p of
+                (m,n) ->
+                    add_ m n
+                    with (\x1 -> True)
+                    reconciled by (\x0 -> \x1 -> x0)
+
+add_ :: BX Nat -> BX Nat -> BX Nat
+add_ = \m -> \n -> case* m of
+                       Z -> n with (\x1 -> True) reconciled by (\x0 -> \x1 -> Z)
+                       S m' ->
+                           S (add_ m' n)
+                           with (\x1 -> case x1 of
+                                            S x2 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            S x2 -> x0)
+
+
+AST node size of output: 52
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Nat/add/spec.hobit"
+*******************************************************************
+CPU time:   0.01s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Nat/uncurryReplicate/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Nat/uncurryReplicate/funs.hobit"
+#root = uncurryReplicate
+#nonRoots = [replicate]
+#examples = "/home/masaomi/hibx/paper_experiments/./Nat/uncurryReplicate/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Nat/uncurryReplicate/funs.hobit>
+andAlso          :: Bool -> Bool -> Bool
+not              :: Bool -> Bool
+orElse           :: Bool -> Bool -> Bool
+replicate        :: a -> Nat -> [a]
+uncurryReplicate :: (a, Nat) -> [a]
+Ok.
+AST node size of #root and #nonRoots: 27
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Nat/uncurryReplicate/spec.hobit"
+*******************************************************************
+uncurryReplicate :: BX (a, Nat) -> BX [a]
+uncurryReplicate = \p -> case* p of
+                             (x,n) ->
+                                 replicate x n
+                                 with (\x1 -> True)
+                                 reconciled by (\x0 -> \x1 -> x0)
+
+replicate :: BX a -> BX Nat -> BX [a]
+replicate = \x -> \n -> case* n of
+                            Z ->
+                                ![]
+                                with (\x1 -> case x1 of
+                                                 [] -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> Z)
+                            S n' ->
+                                (|x : replicate x n'|)
+                                with (\x1 -> case x1 of
+                                                 x2 : x3 -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> case x1 of
+                                                                 x2 : x3 -> S x0)
+
+
+AST node size of output: 62
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Nat/uncurryReplicate/spec.hobit"
+*******************************************************************
+CPU time:   0.01s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Tree/q2/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Tree/q2/funs.hobit"
+#root = q2
+#nonRoots = [q2_section,q2_fig_title_attr,append]
+#examples = "/home/masaomi/hibx/paper_experiments/./Tree/q2/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Tree/q2/funs.hobit>
+andAlso           :: Bool -> Bool -> Bool
+append            :: [Tree Lab] -> [Tree Lab] -> [Tree Lab]
+not               :: Bool -> Bool
+orElse            :: Bool -> Bool -> Bool
+q2                :: Tree Lab -> Tree Lab
+q2_fig_title_attr :: [Tree Lab] -> [Tree Lab]
+q2_section        :: [Tree Lab] -> [Tree Lab]
+Ok.
+AST node size of #root and #nonRoots: 199
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Tree/q2/spec.hobit"
+*******************************************************************
+q2 :: BX (Tree Lab) -> BX (Tree Lab)
+q2 = \t -> case* t of
+               N (E "book") ts ->
+                   N (E (| [
+                        !'f', !'i', !'g', !'l', !'i', !'s', !'t'
+                        ] |)) (q2_section ts)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+append :: BX [Tree Lab] -> BX [Tree Lab] -> BX [Tree Lab]
+append = \l1 -> \l2 -> case* l1 of
+                           [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> True
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x0)
+
+q2_fig_title_attr :: BX [Tree Lab] -> BX [Tree Lab]
+q2_fig_title_attr = \l -> case* l of
+                              [] ->
+                                  ![]
+                                  with (\x1 -> case x1 of
+                                                   [] -> True
+                                                   _ -> False)
+                                  reconciled by (\x0 -> \x1 -> [])
+                              N (E "title") title : rest ->
+                                  (|N (E (| [
+                                         !'t', !'i', !'t', !'l', !'e'
+                                         ] |)) title : q2_fig_title_attr rest|)
+                                  with (\x1 -> case x1 of
+                                                   N (E "title") x2 : x3 -> True
+                                                   _ -> False)
+                                  reconciled by (\x0 -> \x1 -> case x1 of
+                                                                   N (E "title") x2 : x3 -> x0)
+                              N (A a b) attr : rest ->
+                                  (|N (A a b) attr : q2_fig_title_attr rest|)
+                                  with (\x1 -> case x1 of
+                                                   N (A x2 x3) x4 : x5 -> True
+                                                   _ -> False)
+                                  reconciled by (\x0 -> \x1 -> case x1 of
+                                                                   N (A x2 x3) x4 : x5 ->
+                                                                       N (A x2 x2) x0 : x0)
+                              attr : rest ->
+                                  q2_fig_title_attr rest
+                                  with (\x1 -> True)
+                                  reconciled by (\x0 -> \x1 -> x0)
+
+q2_section :: BX [Tree Lab] -> BX [Tree Lab]
+q2_section = \l -> case* l of
+                       [] ->
+                           ![]
+                           with (\x1 -> case x1 of
+                                            [] -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           append (q2_section xs) (q2_section rest)
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                       N (E "figure") attr_title : rest ->
+                           (|N (E (| [
+                                  !'f', !'i', !'g', !'u', !'r', !'e'
+                                  ] |)) (q2_fig_title_attr attr_title) : q2_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (E "figure") x2 : x3 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (E "figure") x2 : x3 -> x0)
+                       node : rest ->
+                           q2_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 406
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Tree/q2/spec.hobit"
+*******************************************************************
+CPU time:   1.30s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Tree/q3/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Tree/q3/funs.hobit"
+#root = q3
+#nonRoots = [q3_book,q3_book,q3_section,add]
+#examples = "/home/masaomi/hibx/paper_experiments/./Tree/q3/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Tree/q3/funs.hobit>
+add        :: Nat -> Nat -> Nat
+andAlso    :: Bool -> Bool -> Bool
+not        :: Bool -> Bool
+orElse     :: Bool -> Bool -> Bool
+q3         :: Tree Lab -> [Tree Lab]
+q3_section :: [Tree Lab] -> (Nat, Nat)
+Ok.
+AST node size of #root and #nonRoots: 191
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Tree/q3/spec.hobit"
+*******************************************************************
+q3 :: BX (Tree Lab) -> BX [Tree Lab]
+q3 = \t -> case* t of
+               N (E "book") ts ->
+                   case* q3_section ts of
+                       (sec,fig) ->
+                           (| [
+                           N (E (| [
+                                !'s',
+                                !'e',
+                                !'c',
+                                !'t',
+                                !'i',
+                                !'o',
+                                !'n',
+                                !'_',
+                                !'c',
+                                !'o',
+                                !'u',
+                                !'n',
+                                !'t'
+                                ] |)) (| [ N (Na sec) ![] ] |),
+                           N (E (| [
+                                !'f',
+                                !'i',
+                                !'g',
+                                !'u',
+                                !'r',
+                                !'e',
+                                !'_',
+                                !'c',
+                                !'o',
+                                !'u',
+                                !'n',
+                                !'t'
+                                ] |)) (| [ N (Na fig) ![] ] |)
+                           ] |)
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+add :: BX Nat -> BX Nat -> BX Nat
+add = \a -> \b -> case* a of
+                      Z -> b with (\x1 -> True) reconciled by (\x0 -> \x1 -> Z)
+                      S a' ->
+                          S (add a' b)
+                          with (\x1 -> case x1 of
+                                           S x2 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           S x2 -> x0)
+
+q3_section :: BX [Tree Lab] -> BX (Nat, Nat)
+q3_section = \l -> case* l of
+                       [] ->
+                           (|Z, Z|)
+                           with (\x1 -> case x1 of
+                                            (Z,Z) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           case* q3_section xs of
+                               (sec1,fig1) ->
+                                   case* q3_section rest of
+                                       (sec2,fig2) ->
+                                           (|S (add sec1 sec2), add fig1 fig2|)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (S x2,x3) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (S x2,x3) -> N (E "section") x0 : x0)
+                       N (E "figure") title : rest ->
+                           case* q3_section rest of
+                               (sec,fig) ->
+                                   (|sec, S fig|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,S x3) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,S x3) -> x0)
+                       node : rest ->
+                           q3_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 339
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Tree/q3/spec.hobit"
+*******************************************************************
+CPU time:   0.36s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Tree/q5/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Tree/q5/funs.hobit"
+#root = q5
+#nonRoots = [q5_book,q5_section,append]
+#examples = "/home/masaomi/hibx/paper_experiments/./Tree/q5/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Tree/q5/funs.hobit>
+andAlso    :: Bool -> Bool -> Bool
+append     :: [a] -> [a] -> [a]
+not        :: Bool -> Bool
+orElse     :: Bool -> Bool -> Bool
+q5         :: Tree Lab -> Tree Lab
+q5_book    :: [Tree Lab] -> [Tree Lab]
+q5_section :: [Tree Lab] -> ([Tree Lab], [Char], Nat)
+Ok.
+AST node size of #root and #nonRoots: 342
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Tree/q5/spec.hobit"
+*******************************************************************
+q5 :: BX (Tree Lab) -> BX (Tree Lab)
+q5 = \t -> case* t of
+               N (E "book") ts ->
+                   case* q5_book ts of
+                       ts' ->
+                           N (E (| [
+                                !'s',
+                                !'e',
+                                !'c',
+                                !'t',
+                                !'i',
+                                !'o',
+                                !'n',
+                                !'_',
+                                !'l',
+                                !'i',
+                                !'s',
+                                !'t'
+                                ] |)) ts'
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+append :: BX [a] -> BX [a] -> BX [a]
+append = \l1 -> \l2 -> case* l1 of
+                           [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> True
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x0)
+
+q5_book :: BX [Tree Lab] -> BX [Tree Lab]
+q5_book = \l -> case* l of
+                    [] ->
+                        ![]
+                        with (\x1 -> case x1 of
+                                         [] -> True
+                                         _ -> False)
+                        reconciled by (\x0 -> \x1 -> [])
+                    N (E "section") xs : rest ->
+                        case* q5_section xs of
+                            (xs',title,n) ->
+                                case* q5_book rest of
+                                    rest' ->
+                                        (|N (E (| [
+                                               !'s', !'e', !'c', !'t', !'i', !'o', !'n'
+                                               ] |)) (| [
+                                                     N (A (| [
+                                                          !'t', !'i', !'t', !'l', !'e'
+                                                          ] |) title) ![],
+                                                     N (AN (| [
+                                                           !'f',
+                                                           !'i',
+                                                           !'g',
+                                                           !'c',
+                                                           !'o',
+                                                           !'u',
+                                                           !'n',
+                                                           !'t'
+                                                           ] |) n) ![]
+                                                     ] |) : append xs' rest'|)
+                                        with (\x1 -> True)
+                                        reconciled by (\x0 -> \x1 -> x0)
+                                with (\x1 -> True)
+                                reconciled by (\x0 -> \x1 -> x0)
+                        with (\x1 -> case x1 of
+                                         N (E "section") [N (A "title" x2) [],
+                                                          N (AN "figcount" x3) []] : x4 ->
+                                             True
+                                         _ -> False)
+                        reconciled by (\x0 -> \x1 -> case x1 of
+                                                         N (E "section") [N (A "title" x2) [],
+                                                                          N (AN "figcount" x3) []] : x4 ->
+                                                             x0)
+                    node : rest ->
+                        q5_book rest
+                        with (\x1 -> True)
+                        reconciled by (\x0 -> \x1 -> x0)
+
+q5_section :: BX [Tree Lab] -> BX ([Tree Lab], [Char], Nat)
+q5_section = \l -> case* l of
+                       [] ->
+                           (|![], ![], Z|)
+                           with (\x1 -> case x1 of
+                                            ([],[],Z) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           case* q5_section xs of
+                               (xs',title,n) ->
+                                   case* q5_section rest of
+                                       (rest',_,rest_n) ->
+                                           (|(|N (E (| [
+                                                    !'s', !'e', !'c', !'t', !'i', !'o', !'n'
+                                                    ] |)) (| [
+                                                          N (A (| [
+                                                               !'t', !'i', !'t', !'l', !'e'
+                                                               ] |) title) ![],
+                                                          N (AN (| [
+                                                                !'f',
+                                                                !'i',
+                                                                !'g',
+                                                                !'c',
+                                                                !'o',
+                                                                !'u',
+                                                                !'n',
+                                                                !'t'
+                                                                ] |) n) ![]
+                                                          ] |) : append xs' rest'|),
+                                             ![],
+                                             rest_n|)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (N (E "section") [N (A "title" x2) [],
+                                                              N (AN "figcount" x3) []] : x4,[],x5) ->
+                                                True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (N (E "section") [N (A "title" x2) [],
+                                                                              N (AN "figcount" x3) []] : x4,[],x5) ->
+                                                                x0)
+                       N (E "figure") fig : rest ->
+                           case* q5_section rest of
+                               (rest',_,n) ->
+                                   (|rest', ![], S n|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,[],S x3) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,[],S x3) -> N (E "figure") x0 : x0)
+                       N (E "title") [N (T title) []] : rest ->
+                           case* q5_section rest of
+                               (rest',_,n) ->
+                                   (|rest', title, n|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,x3,x4) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,x3,x4) -> x0)
+                       node : rest ->
+                           q5_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 813
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Tree/q5/spec.hobit"
+*******************************************************************
+CPU time:   1.20s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Tree/q4/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Tree/q4/funs.hobit"
+#root = q4
+#nonRoots = [q4_book,q4_section]
+#examples = "/home/masaomi/hibx/paper_experiments/./Tree/q4/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Tree/q4/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+q4      :: Tree Lab -> Tree Lab
+q4_book :: [Tree Lab] -> Nat
+Ok.
+AST node size of #root and #nonRoots: 97
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Tree/q4/spec.hobit"
+*******************************************************************
+q4 :: BX (Tree Lab) -> BX (Tree Lab)
+q4 = \t -> case* t of
+               N (E "book") ts ->
+                   N (E (| [
+                        !'t',
+                        !'o',
+                        !'p',
+                        !'_',
+                        !'s',
+                        !'e',
+                        !'c',
+                        !'t',
+                        !'i',
+                        !'o',
+                        !'n',
+                        !'_',
+                        !'c',
+                        !'o',
+                        !'u',
+                        !'n',
+                        !'t'
+                        ] |)) (| [ N (Na (q4_book ts)) ![] ] |)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+q4_book :: BX [Tree Lab] -> BX Nat
+q4_book = \l -> case* l of
+                    [] ->
+                        Z
+                        with (\x1 -> case x1 of
+                                         Z -> True
+                                         _ -> False)
+                        reconciled by (\x0 -> \x1 -> [])
+                    N (E "section") xs : rest ->
+                        S (q4_book rest)
+                        with (\x1 -> case x1 of
+                                         S x2 -> True
+                                         _ -> False)
+                        reconciled by (\x0 -> \x1 -> case x1 of
+                                                         S x2 -> N (E "section") x0 : x0)
+                    node : rest ->
+                        q4_book rest
+                        with (\x1 -> True)
+                        reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 170
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Tree/q4/spec.hobit"
+*******************************************************************
+CPU time:   0.04s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Tree/q6/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Tree/q6/funs.hobit"
+#root = q6
+#nonRoots = [q6_section,q6_find_title_attr,append]
+#examples = "/home/masaomi/hibx/paper_experiments/./Tree/q6/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Tree/q6/funs.hobit>
+andAlso            :: Bool -> Bool -> Bool
+append             :: [a] -> [a] -> [a]
+not                :: Bool -> Bool
+orElse             :: Bool -> Bool -> Bool
+q6                 :: Tree Lab -> Tree Lab
+q6_find_title_attr :: [Tree Lab] -> ([Tree Lab], [Tree Lab])
+q6_section         :: [Tree Lab] -> ([Tree Lab], Nat)
+title              :: [Char]
+Ok.
+AST node size of #root and #nonRoots: 236
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Tree/q6/spec.hobit"
+*******************************************************************
+q6 :: BX (Tree Lab) -> BX (Tree Lab)
+q6 = \t -> case* t of
+               N (E "book") ts ->
+                   case* q6_section ts of
+                       (ts',n) ->
+                           N (E (| [ !'t', !'o', !'c' ] |)) ts'
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+append :: BX [a] -> BX [a] -> BX [a]
+append = \l1 -> \l2 -> case* l1 of
+                           [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> True
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x0)
+
+q6_find_title_attr :: BX [Tree Lab] -> BX ([Tree Lab], [Tree Lab])
+q6_find_title_attr = \l -> case* l of
+                               N (A a b) [] : rest ->
+                                   case* q6_find_title_attr rest of
+                                       (ta,rest') ->
+                                           (|(|N (A a b) ![] : ta|), rest'|)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> case x1 of
+                                                    (N (A x2 x3) [] : x4,x5) -> True
+                                                    _ -> False)
+                                   reconciled by (\x0 -> \x1 -> case x1 of
+                                                                    (N (A x2 x3) [] : x4,x5) -> x0)
+                               N (E "title") title : rest ->
+                                   (|(| [ N (E (| [ !'t', !'i', !'t', !'l', !'e' ] |)) title ] |),
+                                     rest|)
+                                   with (\x1 -> case x1 of
+                                                    ([N (E "title") x2],x3) -> True
+                                                    _ -> False)
+                                   reconciled by (\x0 -> \x1 -> case x1 of
+                                                                    ([N (E "title") x2],x3) -> x0)
+
+q6_section :: BX [Tree Lab] -> BX ([Tree Lab], Nat)
+q6_section = \l -> case* l of
+                       [] ->
+                           (|![], Z|)
+                           with (\x1 -> case x1 of
+                                            ([],Z) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           case* q6_find_title_attr xs of
+                               (title_attr,xs') ->
+                                   case* q6_section xs' of
+                                       (xs'',n1) ->
+                                           case* q6_section rest of
+                                               (rest',n2) ->
+                                                   (|(|N (E (| [
+                                                            !'s', !'e', !'c', !'t', !'i', !'o', !'n'
+                                                            ] |)) (append title_attr (|(N (E (| [
+                                                                                             !'f',
+                                                                                             !'i',
+                                                                                             !'g',
+                                                                                             !'c',
+                                                                                             !'o',
+                                                                                             !'u',
+                                                                                             !'n',
+                                                                                             !'t'
+                                                                                             ] |)) (| [
+                                                                                                   N (Na n1) ![]
+                                                                                                   ] |) : xs'')|)) : rest'|),
+                                                     n2|)
+                                                   with (\x1 -> True)
+                                                   reconciled by (\x0 -> \x1 -> x0)
+                                           with (\x1 -> True)
+                                           reconciled by (\x0 -> \x1 -> x0)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (N (E "section") x2 : x3,x4) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (N (E "section") x2 : x3,x4) ->
+                                                                N (E "section") (N (E title) x0 : x0) : x0)
+                       N (E "figure") fig : rest ->
+                           case* q6_section rest of
+                               (rest',n) ->
+                                   (|rest', S n|)
+                                   with (\x1 -> True)
+                                   reconciled by (\x0 -> \x1 -> x0)
+                           with (\x1 -> case x1 of
+                                            (x2,S x3) -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            (x2,S x3) -> N (E "figure") x0 : x0)
+                       node : rest ->
+                           q6_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 530
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Tree/q6/spec.hobit"
+*******************************************************************
+CPU time:  24.26s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./Tree/q1/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./Tree/q1/funs.hobit"
+#root = q1
+#nonRoots = [q1_book,q1_section]
+#examples = "/home/masaomi/hibx/paper_experiments/./Tree/q1/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./Tree/q1/funs.hobit>
+andAlso    :: Bool -> Bool -> Bool
+not        :: Bool -> Bool
+orElse     :: Bool -> Bool -> Bool
+q1         :: Tree Lab -> Tree Lab
+q1_section :: [Tree Lab] -> [Tree Lab]
+Ok.
+AST node size of #root and #nonRoots: 136
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./Tree/q1/spec.hobit"
+*******************************************************************
+q1 :: BX (Tree Lab) -> BX (Tree Lab)
+q1 = \t -> case* t of
+               N (E "book") ts ->
+                   N (E (| [ !'t', !'o', !'c' ] |)) (q1_section ts)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+q1_section :: BX [Tree Lab] -> BX [Tree Lab]
+q1_section = \l -> case* l of
+                       [] ->
+                           ![]
+                           with (\x1 -> case x1 of
+                                            [] -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (A a b) [] : rest ->
+                           (|N (A a b) ![] : q1_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (A x2 x3) [] : x4 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (A x2 x3) [] : x4 ->
+                                                                N (A x2 x2) [] : x0)
+                       N (E "title") title : rest ->
+                           (|N (E (| [
+                                  !'t', !'i', !'t', !'l', !'e'
+                                  ] |)) title : q1_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (E "title") x2 : x3 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (E "title") x2 : x3 -> x0)
+                       N (E "section") xs : rest ->
+                           (|N (E (| [
+                                  !'s', !'e', !'c', !'t', !'i', !'o', !'n'
+                                  ] |)) (q1_section xs) : q1_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (E "section") x2 : x3 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (E "section") x2 : x3 ->
+                                                                N (E "section") x2 : x0)
+                       node : rest ->
+                           q1_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 319
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./Tree/q1/spec.hobit"
+*******************************************************************
+CPU time:   0.66s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/length/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/length/funs.hobit"
+#root = length
+#nonRoots = []
+#examples = "/home/masaomi/hibx/paper_experiments/./List/length/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/length/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+length  :: [Nat] -> Nat
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 13
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/length/spec.hobit"
+*******************************************************************
+length :: BX [Nat] -> BX Nat
+length = \l -> case* l of
+                   [] ->
+                       Z
+                       with (\x1 -> case x1 of
+                                        Z -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> [])
+                   x : xs ->
+                       S (length xs)
+                       with (\x1 -> case x1 of
+                                        S x2 -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> case x1 of
+                                                        S x2 -> Z : x0)
+
+
+AST node size of output: 42
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/length/spec.hobit"
+*******************************************************************
+CPU time:   0.01s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/professor/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/professor/funs.hobit"
+#root = professor
+#nonRoots = []
+#examples = "/home/masaomi/hibx/paper_experiments/./List/professor/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/professor/funs.hobit>
+andAlso   :: Bool -> Bool -> Bool
+not       :: Bool -> Bool
+orElse    :: Bool -> Bool -> Bool
+professor :: [SP] -> [[Char]]
+Ok.
+AST node size of #root and #nonRoots: 23
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/professor/spec.hobit"
+*******************************************************************
+professor :: BX [SP] -> BX [[Char]]
+professor = \l -> case* l of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      Professor name : rest ->
+                          (|name : professor rest|)
+                          with (\x1 -> case x1 of
+                                           x2 : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           x2 : x3 -> Professor x2 : x0)
+                      Student name : rest ->
+                          professor rest
+                          with (\x1 -> True)
+                          reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 60
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/professor/spec.hobit"
+*******************************************************************
+CPU time:   0.02s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/lookup_success/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/lookup_success/funs.hobit"
+#root = lookup
+#nonRoots = [eqNat,lookup_]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/lookup_success/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/lookup_success/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+eqNat   :: Nat -> Nat -> Bool
+lookup  :: ([(Nat, Nat)], Nat) -> Nat
+lookup_ :: [(Nat, Nat)] -> Nat -> Nat
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 62
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/lookup_success/spec.hobit"
+*******************************************************************
+lookup :: BX ([(Nat, Nat)], Nat) -> BX Nat
+lookup = \p -> case* p of
+                   (a,b) ->
+                       lookup_ a b
+                       with (\x1 -> True)
+                       reconciled by (\x0 -> \x1 -> x0)
+
+eqNat :: BX Nat -> BX Nat -> BX Bool
+eqNat = \n -> \m -> case* (|n, m|) of
+                        (Z,Z) ->
+                            True
+                            with (\x1 -> case x1 of
+                                             True -> True
+                                             _ -> False)
+                            reconciled by (\x0 -> \x1 -> (Z, Z))
+                        (S n',Z) ->
+                            False
+                            with (\x1 -> case x1 of
+                                             False -> True
+                                             _ -> False)
+                            reconciled by (\x0 -> \x1 -> case x1 of
+                                                             False -> x0)
+                        (Z,S m') ->
+                            False
+                            with (\x1 -> case x1 of
+                                             False -> True
+                                             _ -> False)
+                            reconciled by (\x0 -> \x1 -> case x1 of
+                                                             False -> x0)
+                        (S n',S m') ->
+                            eqNat n' m'
+                            with (\x1 -> True)
+                            reconciled by (\x0 -> \x1 -> x0)
+
+lookup_ :: BX [(Nat, Nat)] -> BX Nat -> BX Nat
+lookup_ = \l -> \k' -> case* l of
+                           (k,v) : rest ->
+                               case* eqNat k k' of
+                                   True -> v with (\x1 -> True) reconciled by (\x0 -> \x1 -> True)
+                                   False ->
+                                       lookup_ rest k'
+                                       with (\x1 -> True)
+                                       reconciled by (\x0 -> \x1 -> False)
+                               with (\x1 -> True)
+                               reconciled by (\x0 -> \x1 -> x0)
+
+
+AST node size of output: 128
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/lookup_success/spec.hobit"
+*******************************************************************
+CPU time:   0.24s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/snoc/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/snoc/funs.hobit"
+#root = snoc
+#nonRoots = [snoc_]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/snoc/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/snoc/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+snoc    :: ([a], a) -> [a]
+snoc_   :: [a] -> a -> [a]
+Ok.
+AST node size of #root and #nonRoots: 30
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/snoc/spec.hobit"
+*******************************************************************
+snoc :: BX ([a], a) -> BX [a]
+snoc = \p -> case* p of
+                 (xs,a) ->
+                     snoc_ xs a
+                     with (\x1 -> True)
+                     reconciled by (\x0 -> \x1 -> x0)
+
+snoc_ :: BX [a] -> BX a -> BX [a]
+snoc_ = \zs -> \a -> case* zs of
+                         [] ->
+                             (| [ a ] |)
+                             with (\x1 -> case x1 of
+                                              [x2] -> True
+                                              _ -> False)
+                             reconciled by (\x0 -> \x1 -> [])
+                         x : xs ->
+                             (|x : snoc_ xs a|)
+                             with (\x1 -> case x1 of
+                                              x2 : x3 ->
+                                                  case x3 of
+                                                      [] -> False
+                                                      x4 : x5 -> True
+                                              _ -> False)
+                             reconciled by (\x0 -> \x1 -> case x1 of
+                                                              x2 : x3 -> x3)
+
+
+AST node size of output: 74
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/snoc/spec.hobit"
+*******************************************************************
+CPU time:   0.19s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/mapNot/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/mapNot/funs.hobit"
+#root = mapNot
+#nonRoots = [map,not]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/mapNot/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/mapNot/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+map     :: (Bool -> Bool) -> [Bool] -> [Bool]
+mapNot  :: [Bool] -> [Bool]
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 44
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/mapNot/spec.hobit"
+*******************************************************************
+mapNot :: BX [Bool] -> BX [Bool]
+mapNot = \l -> map (\a -> not a) l
+
+map :: (BX Bool -> BX Bool) -> BX [Bool] -> BX [Bool]
+map = \f -> \l -> case* l of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      x : xs ->
+                          (|f x : map f xs|)
+                          with (\x1 -> case x1 of
+                                           x2 : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           x2 : x3 -> True : x0)
+
+not :: BX Bool -> BX Bool
+not = \b -> case* b of
+                True ->
+                    False
+                    with (\x1 -> case x1 of
+                                     False -> True
+                                     _ -> False)
+                    reconciled by (\x0 -> \x1 -> True)
+                False ->
+                    True
+                    with (\x1 -> case x1 of
+                                     True -> True
+                                     _ -> False)
+                    reconciled by (\x0 -> \x1 -> False)
+
+
+AST node size of output: 89
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/mapNot/spec.hobit"
+*******************************************************************
+CPU time:   0.03s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/append/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/append/funs.hobit"
+#root = append
+#nonRoots = [append_]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/append/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/append/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+append  :: ([a], [a]) -> [a]
+append_ :: [a] -> [a] -> [a]
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 28
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/append/spec.hobit"
+*******************************************************************
+append :: BX ([a], [a]) -> BX [a]
+append = \l -> case* l of
+                   (l1,l2) ->
+                       append_ l1 l2
+                       with (\x1 -> True)
+                       reconciled by (\x0 -> \x1 -> x0)
+
+append_ :: BX [a] -> BX [a] -> BX [a]
+append_ = \l1 -> \l2 -> case* l1 of
+                            [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                            x : xs ->
+                                (|x : append_ xs l2|)
+                                with (\x1 -> case x1 of
+                                                 x2 : x3 -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> case x1 of
+                                                                 x2 : x3 -> x0)
+
+
+AST node size of output: 56
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/append/spec.hobit"
+*******************************************************************
+CPU time:   0.02s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/appendBc/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/appendBc/funs.hobit"
+#root = appendBc
+#nonRoots = [append]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/appendBc/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/appendBc/funs.hobit>
+andAlso  :: Bool -> Bool -> Bool
+append   :: [a] -> [a] -> [a]
+appendBc :: [Char] -> [Char]
+eqN      :: Nat -> Nat -> Bool
+length   :: [a] -> Nat
+not      :: Bool -> Bool
+orElse   :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 27
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/appendBc/spec.hobit"
+*******************************************************************
+appendBc :: BX [Char] -> BX [Char]
+appendBc = \l -> append l ";;"
+
+append :: BX [a] -> [a] -> BX [a]
+append = \l1 -> \l2 -> case* l1 of
+                           [] ->
+                               !l2
+                               with (\x1 -> eqN (length l2) (length x1))
+                               reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> not (eqN (length x1) (length l2))
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x3)
+
+
+AST node size of output: 69
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/appendBc/spec.hobit"
+*******************************************************************
+CPU time:   7.31s
+
+
+timeout (30 s)
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/mapReplicate/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/mapReplicate/funs.hobit"
+#root = mapReplicate
+#nonRoots = [map,f,replicate]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/mapReplicate/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/mapReplicate/funs.hobit>
+andAlso      :: Bool -> Bool -> Bool
+f            :: (a, Nat) -> [a]
+map          :: ((Char, Nat) -> [Char])
+                -> [(Char, Nat)] -> [[Char]]
+mapReplicate :: [(Char, Nat)] -> [[Char]]
+not          :: Bool -> Bool
+orElse       :: Bool -> Bool -> Bool
+replicate    :: a -> Nat -> [a]
+Ok.
+AST node size of #root and #nonRoots: 55
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/mapReplicate/spec.hobit"
+*******************************************************************
+mapReplicate :: BX [(Char, Nat)] -> BX [[Char]]
+mapReplicate = \l -> map (\a -> f a) l
+
+f :: BX (a, Nat) -> BX [a]
+f = \xn -> case* xn of
+               (x,n) ->
+                   replicate x n
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+map :: (BX (Char, Nat) -> BX [Char]) -> BX [(Char, Nat)] -> BX [[Char]]
+map = \f -> \l -> case* l of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      x : xs ->
+                          (|f x : map f xs|)
+                          with (\x1 -> case x1 of
+                                           x2 : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           x2 : x3 -> ('a', Z) : x0)
+
+replicate :: BX a -> BX Nat -> BX [a]
+replicate = \x -> \n -> case* n of
+                            Z ->
+                                ![]
+                                with (\x1 -> case x1 of
+                                                 [] -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> Z)
+                            S n' ->
+                                (|x : replicate x n'|)
+                                with (\x1 -> case x1 of
+                                                 x2 : x3 -> True
+                                                 _ -> False)
+                                reconciled by (\x0 -> \x1 -> case x1 of
+                                                                 x2 : x3 -> S x0)
+
+
+AST node size of output: 123
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/mapReplicate/spec.hobit"
+*******************************************************************
+CPU time:   0.13s
+
+
+timeout (30 s)
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/reverse/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/reverse/funs.hobit"
+#root = reverse
+#nonRoots = [revAppend]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/reverse/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/reverse/funs.hobit>
+andAlso   :: Bool -> Bool -> Bool
+eqN       :: Nat -> Nat -> Bool
+length    :: [a] -> Nat
+not       :: Bool -> Bool
+orElse    :: Bool -> Bool -> Bool
+revAppend :: Nat -> [a] -> [a] -> [a]
+reverse   :: [a] -> [a]
+Ok.
+AST node size of #root and #nonRoots: 29
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/reverse/spec.hobit"
+*******************************************************************
+reverse :: BX [a] -> BX [a]
+reverse = \l -> revAppend Z ![] l
+
+revAppend :: Nat -> BX [a] -> BX [a] -> BX [a]
+revAppend = \n -> \e -> \l -> case* l of
+                                  [] ->
+                                      e
+                                      with (\x1 -> eqN n (length x1))
+                                      reconciled by (\x0 -> \x1 -> [])
+                                  x : xs ->
+                                      revAppend (S n) (|(x : e)|) xs
+                                      with (\x1 -> not (eqN n (length x1)))
+                                      reconciled by (\x0 -> \x1 -> x1)
+
+
+AST node size of output: 53
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/reverse/spec.hobit"
+*******************************************************************
+CPU time:   1.67s
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/lengthTail/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/lengthTail/funs.hobit"
+#root = lengthTail
+#nonRoots = [go]
+#examples = "/home/masaomi/hibx/paper_experiments/./List/lengthTail/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/lengthTail/funs.hobit>
+andAlso    :: Bool -> Bool -> Bool
+eqN        :: Nat -> Nat -> Bool
+go         :: Nat -> [Nat] -> Nat
+lengthTail :: [Nat] -> Nat
+not        :: Bool -> Bool
+orElse     :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 22
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/lengthTail/spec.hobit"
+*******************************************************************
+lengthTail :: BX [Nat] -> BX Nat
+lengthTail = \l -> go Z l
+
+go :: Nat -> BX [Nat] -> BX Nat
+go = \acc -> \l -> case* l of
+                       [] ->
+                           !acc
+                           with (\x1 -> eqN x1 acc)
+                           reconciled by (\x0 -> \x1 -> [])
+                       x : xs ->
+                           go (S acc) xs
+                           with (\x1 -> not (eqN acc x1))
+                           reconciled by (\x0 -> \x1 -> Z : x0)
+
+
+AST node size of output: 45
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/lengthTail/spec.hobit"
+*******************************************************************
+CPU time:   0.29s
+
+
+timeout (30 s)
+
+
+*******************************************************************
+Running example "/home/masaomi/hibx/paper_experiments/./List/mapFst/spec.hobit"
+#funs = "/home/masaomi/hibx/paper_experiments/./List/mapFst/funs.hobit"
+#root = mapFst
+#nonRoots = []
+#examples = "/home/masaomi/hibx/paper_experiments/./List/mapFst/examples.hobit"
+*******************************************************************
+* Loaded Symbols from </home/masaomi/hibx/paper_experiments/./List/mapFst/funs.hobit>
+andAlso :: Bool -> Bool -> Bool
+mapFst  :: [(Int, Char)] -> [Int]
+not     :: Bool -> Bool
+orElse  :: Bool -> Bool -> Bool
+Ok.
+AST node size of #root and #nonRoots: 16
+
+*******************************************************************
+Result for example "/home/masaomi/hibx/paper_experiments/./List/mapFst/spec.hobit"
+*******************************************************************
+mapFst :: BX [(Int, Char)] -> BX [Int]
+mapFst = \l -> case* l of
+                   [] ->
+                       ![]
+                       with (\x1 -> case x1 of
+                                        [] -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> [])
+                   (a,b) : xs ->
+                       (|a : mapFst xs|)
+                       with (\x1 -> case x1 of
+                                        x2 : x3 -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> case x1 of
+                                                        x2 : x3 -> (0, 'a') : x0)
+
+
+AST node size of output: 49
+*******************************************************************
+Time for example "/home/masaomi/hibx/paper_experiments/./List/mapFst/spec.hobit"
+*******************************************************************
+CPU time:   0.01s
+
+

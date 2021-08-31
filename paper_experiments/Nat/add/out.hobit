@@ -1,0 +1,22 @@
+add :: BX (Nat, Nat) -> BX Nat
+add = \p -> case* p of
+                (m,n) ->
+                    add_ m n
+                    with (\x1 -> True)
+                    reconciled by (\x0 -> \x1 -> x0)
+
+add_ :: BX Nat -> BX Nat -> BX Nat
+add_ = \m -> \n -> case* m of
+                       Z -> n with (\x1 -> True) reconciled by (\x0 -> \x1 -> Z)
+                       S m' ->
+                           S (add_ m' n)
+                           with (\x1 -> case x1 of
+                                            S x2 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            S x2 -> x0)
+
+-- time                 45.26 ms   (33.19 ms .. 58.77 ms)
+--                      0.648 R²   (0.382 R² .. 0.870 R²)
+-- mean                 28.53 ms   (21.24 ms .. 42.89 ms)
+-- std dev              18.97 ms   (11.29 ms .. 29.55 ms)

@@ -1,0 +1,29 @@
+data Tree a = N a [Tree a] -- polymorphic tree type
+
+data Lab = A [Char] [Char] -- Attribute
+         | T [Char] -- Text
+         | E [Char] -- Element
+
+q1 :: Tree Lab -> Tree Lab
+q1 t = let (N (E "book") ts) = t
+       in N (E "toc") (q1_section ts)
+
+q1_section :: [Tree Lab] -> [Tree Lab]
+q1_section l = case l of
+  [] -> []
+  (N (A a b) []):rest -> (N (A a b) []):q1_section rest
+  (N (E "title") title):rest -> (N (E "title") title):q1_section rest
+  N (E "section") xs:rest -> (N (E "section") (q1_section xs)):q1_section rest
+  node:rest -> q1_section rest
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

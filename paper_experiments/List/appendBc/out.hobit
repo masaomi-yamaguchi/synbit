@@ -1,0 +1,21 @@
+appendBc :: BX [Char] -> BX [Char]
+appendBc = \l -> append l ";;"
+
+append :: BX [a] -> [a] -> BX [a]
+append = \l1 -> \l2 -> case* l1 of
+                           [] ->
+                               !l2
+                               with (\x1 -> eqN (length l2) (length x1))
+                               reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> not (eqN (length x1) (length l2))
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x3)
+
+-- time                 5.626 s    (5.464 s .. 5.789 s)
+--                      1.000 R²   (1.000 R² .. 1.000 R²)
+-- mean                 5.718 s    (5.670 s .. 5.750 s)
+-- std dev              46.33 ms   (13.00 ms .. 62.74 ms)

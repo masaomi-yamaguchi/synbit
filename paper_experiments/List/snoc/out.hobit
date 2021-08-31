@@ -1,0 +1,31 @@
+snoc :: BX ([a], a) -> BX [a]
+snoc = \p -> case* p of
+                 (xs,a) ->
+                     snoc_ xs a
+                     with (\x1 -> True)
+                     reconciled by (\x0 -> \x1 -> x0)
+
+snoc_ :: BX [a] -> BX a -> BX [a]
+snoc_ = \zs -> \a -> case* zs of
+                         [] ->
+                             (| [ a ] |)
+                             with (\x1 -> case x1 of
+                                              [x2] -> True
+                                              _ -> False)
+                             reconciled by (\x0 -> \x1 -> [])
+                         x : xs ->
+                             (|x : snoc_ xs a|)
+                             with (\x1 -> case x1 of
+                                              x2 : x3 ->
+                                                  case x3 of
+                                                      [] -> False
+                                                      x4 : x5 -> True
+                                              _ -> False)
+                             reconciled by (\x0 -> \x1 -> case x1 of
+                                                              x2 : x3 -> x3)
+
+
+-- time                 151.4 ms   (109.1 ms .. 186.0 ms)
+--                      0.972 R²   (0.931 R² .. 0.998 R²)
+-- mean                 163.9 ms   (154.5 ms .. 175.0 ms)
+-- std dev              14.55 ms   (10.67 ms .. 20.17 ms)

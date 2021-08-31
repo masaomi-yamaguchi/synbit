@@ -1,0 +1,21 @@
+length :: BX [Nat] -> BX Nat
+length = \l -> case* l of
+                   [] ->
+                       Z
+                       with (\x1 -> case x1 of
+                                        Z -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> [])
+                   x : xs ->
+                       S (length xs)
+                       with (\x1 -> case x1 of
+                                        S x2 -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> case x1 of
+                                                        S x2 -> Z : x0)
+
+
+-- time                 40.63 ms   (28.04 ms .. 54.63 ms)
+--                      0.726 R²   (0.538 R² .. 0.884 R²)
+-- mean                 24.22 ms   (17.86 ms .. 31.98 ms)
+-- std dev              14.36 ms   (11.77 ms .. 17.77 ms)

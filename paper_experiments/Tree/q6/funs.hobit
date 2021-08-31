@@ -1,0 +1,56 @@
+data Nat = Z
+         | S Nat
+
+-- | Abstract addresses
+data Tree a = N a [Tree a] -- polymorphic tree type
+
+data Lab = A [Char] [Char] -- Attribute
+         | T [Char] -- Text
+         | E [Char] -- Element
+         | Na Nat
+
+q6 :: Tree Lab -> Tree Lab
+q6 t = let (N (E "book") ts) = t
+       in let (ts', n) = q6_section ts
+          in N (E "toc") ts'
+
+q6_section :: [Tree Lab] -> ([Tree Lab], Nat)
+q6_section l = case l of
+  [] -> ([], Z)
+  N (E "section") xs:rest
+    -> let (title_attr, xs') = q6_find_title_attr xs
+           (xs'', n1) = q6_section xs'
+           (rest', n2) = q6_section rest
+       in ( N
+              (E "section")
+              (append title_attr (N (E "figcount") [N (Na n1) []]:xs''))
+            :rest'
+          , n2)
+  N (E "figure") fig:rest -> let (rest', n) = q6_section rest
+                             in (rest', S n)
+  node:rest -> q6_section rest
+
+q6_find_title_attr :: [Tree Lab] -> ([Tree Lab], [Tree Lab])
+q6_find_title_attr l = case l of
+  N (A a b) []:rest        -> let (ta, rest') = q6_find_title_attr rest
+                              in (N (A a b) []:ta, rest')
+  N (E "title") title:rest -> (N (E "title") title:[], rest)
+
+append :: [a] -> [a] -> [a]
+append l1 l2 = case l1 of
+  []   -> l2
+  x:xs -> x:append xs l2
+
+title = "title"
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

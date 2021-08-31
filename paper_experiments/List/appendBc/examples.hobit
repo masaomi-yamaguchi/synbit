@@ -1,0 +1,3 @@
+ex1 = ("apple", "pineapple;;", "pineapple")
+
+ex2 = ("apple", "plum;;", "plum")

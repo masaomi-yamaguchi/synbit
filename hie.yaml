@@ -1,0 +1,32 @@
+# package.yamlを見て手動で作成
+cradle:
+  multi:
+    # 全体設定
+    - path: "."
+      config: { cradle: { stack: {} } }
+
+    # library: source-dirs: src より
+    - path: "./src"
+      config: { cradle: { stack: { component: "HOBiT:lib" } } }
+    
+    # executables: より
+    - path: "./app"
+      config: { cradle: { stack: { component: "HOBiT:exe:hobit" } } }
+    - path: "./snexe"
+      config: { cradle: { stack: { component: "HOBiT:exe:synbit" } } }
+
+    # benchmarks: より
+    - path: "./bench"
+      config: { cradle: { stack: { component: "HOBiT:bench:synthesisBench" } } }
+    
+    # - path: "./appTest"
+    #   config: { cradle: { stack: { component: "HOBiT:exe:mytest" } } }
+    
+    # HIE に読み込ませたくないディレクトリ 
+    # (Syntax highlightはHIEの機能ではないので表示される)
+    - path: "./test"
+      config: { cradle: { none: } }
+    - path: "./BX-synthesis-description"
+      config: { cradle: { none: } }
+    - path: "./hobit_examples"
+      config: { cradle: { none: } }

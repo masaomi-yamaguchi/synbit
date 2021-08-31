@@ -1,0 +1,84 @@
+name: HOBiT
+version: 0.1.0.0
+synopsis: 'Synthesis for HOBiT'
+author: anonymous
+maintainer: anonymous
+copyright: anonymous
+license: BSD3
+
+other-extensions:
+- PatternSynonyms
+- CPP
+
+extra-source-files:
+- README.md
+
+ghc-options:
+- -O2
+
+dependencies:
+- transformers
+- base ^>=4.12.0.0
+- criterion
+- weigh
+- deepseq
+- containers
+- pqueue
+- mtl >=2.2 && <2.3
+- pretty >=1.1 && <1.2
+- containers >=0.5 && <0.7
+- array >=0.5 && <0.6
+- transformers >=0.4 && <0.6
+- stm >=2.4 && <2.6
+- haskeline >=0.7 && <0.8
+- directory >=1.2 && <1.4
+- filepath >=1.3 && <1.5
+- derive
+- template-haskell
+
+build-tools:
+- alex
+- happy
+
+library:
+  source-dirs: src
+
+
+executables:
+  synbit:
+    source-dirs: snexe
+    main: SynthesisExeMain.hs
+    dependencies:
+    - HOBiT
+    - timeit
+    when:
+    - cpp-options: -DDEBUG
+      condition: flag(debug)
+  # mytest:
+  #   source-dirs: appTest
+  #   main: TestMain.hs
+  #   dependencies:
+  #   - HOBiT
+  hobit:
+    source-dirs: app
+    main: Main.hs
+    dependencies:
+    - HOBiT
+    when:
+    - cpp-options: -DDEBUG
+      condition: flag(debug)
+
+benchmarks:
+  synthesisBench:
+    main: bench/BenchMain.hs
+    dependencies:
+    - criterion
+    - weigh
+    - deepseq
+    - HOBiT
+
+flags:
+  debug:
+    manual: false
+    default: false
+    description: Enable debug message

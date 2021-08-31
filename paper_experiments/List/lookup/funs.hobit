@@ -1,0 +1,30 @@
+data Nat = Z
+         | S Nat
+
+lookup p = case p of
+  (a, b) -> lookup_ a b
+
+lookup_ :: [(Nat, Nat)] -> Nat -> Nat
+lookup_ l k' = let ((k, v):rest) = l
+               in case eqNat k k' of
+                    True  -> v
+                    False -> lookup_ rest k'
+
+eqNat :: Nat -> Nat -> Bool
+eqNat n m = case (n, m) of
+  (Z, Z)       -> True
+  (S n', Z)    -> False
+  (Z, S m')    -> False
+  (S n', S m') -> eqNat n' m'
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

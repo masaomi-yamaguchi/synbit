@@ -1,0 +1,21 @@
+mapFst :: BX [(Int, Char)] -> BX [Int]
+mapFst = \l -> case* l of
+                   [] ->
+                       ![]
+                       with (\x1 -> case x1 of
+                                        [] -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> [])
+                   (a,b) : xs ->
+                       (|a : mapFst xs|)
+                       with (\x1 -> case x1 of
+                                        x2 : x3 -> True
+                                        _ -> False)
+                       reconciled by (\x0 -> \x1 -> case x1 of
+                                                        x2 : x3 -> (0, 'a') : x0)
+
+
+-- time                 16.13 ms   (14.47 ms .. 17.27 ms)
+--                      0.969 R²   (0.952 R² .. 0.984 R²)
+-- mean                 14.68 ms   (14.19 ms .. 15.30 ms)
+-- std dev              1.313 ms   (1.042 ms .. 1.642 ms)

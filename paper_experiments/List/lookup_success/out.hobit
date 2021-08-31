@@ -1,0 +1,52 @@
+lookup :: BX ([(Nat, Nat)], Nat) -> BX Nat
+lookup = \p -> case* p of
+                   (a,b) ->
+                       lookup_ a b
+                       with (\x1 -> True)
+                       reconciled by (\x0 -> \x1 -> x0)
+
+eqNat :: BX Nat -> BX Nat -> BX Bool
+eqNat = \n -> \m -> case* (|n, m|) of
+                        (Z,Z) ->
+                            True
+                            with (\x1 -> case x1 of
+                                             True -> True
+                                             _ -> False)
+                            reconciled by (\x0 -> \x1 -> (Z, Z))
+                        (S n',Z) ->
+                            False
+                            with (\x1 -> case x1 of
+                                             False -> True
+                                             _ -> False)
+                            reconciled by (\x0 -> \x1 -> case x1 of
+                                                             False -> x0)
+                        (Z,S m') ->
+                            False
+                            with (\x1 -> case x1 of
+                                             False -> True
+                                             _ -> False)
+                            reconciled by (\x0 -> \x1 -> case x1 of
+                                                             False -> x0)
+                        (S n',S m') ->
+                            eqNat n' m'
+                            with (\x1 -> True)
+                            reconciled by (\x0 -> \x1 -> x0)
+
+lookup_ :: BX [(Nat, Nat)] -> BX Nat -> BX Nat
+lookup_ = \l -> \k' -> case* l of
+                           (k,v) : rest ->
+                               case* eqNat k k' of
+                                   True -> v with (\x1 -> True) reconciled by (\x0 -> \x1 -> True)
+                                   False ->
+                                       lookup_ rest k'
+                                       with (\x1 -> True)
+                                       reconciled by (\x0 -> \x1 -> False)
+                               with (\x1 -> True)
+                               reconciled by (\x0 -> \x1 -> x0)
+
+
+-- time                 92.50 ms   (86.54 ms .. 99.53 ms)
+--                      0.992 R²   (0.974 R² .. 0.999 R²)
+-- mean                 90.40 ms   (84.72 ms .. 93.90 ms)
+-- std dev              7.291 ms   (3.855 ms .. 11.81 ms)
+-- variance introduced by outliers: 21% (moderately inflated)

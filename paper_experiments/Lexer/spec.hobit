@@ -1,0 +1,7 @@
+#funs = "funs.hobit"
+
+#root = tokenize
+
+#nonRoots = num
+
+#examples = "examples.hobit"

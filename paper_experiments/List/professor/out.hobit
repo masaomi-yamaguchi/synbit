@@ -1,0 +1,25 @@
+professor :: BX [SP] -> BX [[Char]]
+professor = \l -> case* l of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      Professor name : rest ->
+                          (|name : professor rest|)
+                          with (\x1 -> case x1 of
+                                           x2 : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           x2 : x3 -> Professor x2 : x0)
+                      Student name : rest ->
+                          professor rest
+                          with (\x1 -> True)
+                          reconciled by (\x0 -> \x1 -> x0)
+
+
+-- time                 22.91 ms   (21.06 ms .. 24.59 ms)
+--                      0.979 R²   (0.966 R² .. 0.995 R²)
+-- mean                 21.01 ms   (20.30 ms .. 21.87 ms)
+-- std dev              1.837 ms   (1.383 ms .. 2.438 ms)

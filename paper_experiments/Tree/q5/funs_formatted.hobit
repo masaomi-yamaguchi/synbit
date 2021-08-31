@@ -1,0 +1,35 @@
+append :: [a] -> [a] -> [a]
+append l1 l2 = case l1 of
+  []   -> l2
+  x:xs -> x:append xs l2
+
+q5 :: Tree Lab -> Tree Lab
+q5 t = let (N (E "book") ts) = t
+           ts' = q5_book ts
+       in N (E "section_list") ts'
+
+q5_book :: [Tree Lab] -> [Tree Lab]
+q5_book l = case l of
+  [] -> []
+  N (E "section") xs:rest
+    -> let (xs', title, n) = q5_section xs
+           rest' = q5_book rest
+       in ((N (E "section") [N (A "title" title) [], N (AN "figcount" n) []])
+           :(append xs' rest'))
+  node:rest -> q5_book rest
+
+q5_section :: [Tree Lab] -> ([Tree Lab], [Char], Nat)
+q5_section l = case l of
+  [] -> ([], "", Z)
+  N (E "section") xs:rest
+    -> let (xs', title, n) = q5_section xs
+           (rest', _, rest_n) = q5_section rest
+       in ( (N (E "section") [N (A "title" title) [], N (AN "figcount" n) []])
+            :(append xs' rest')
+          , ""
+          , rest_n)
+  N (E "figure") fig:rest -> let (rest', _, n) = q5_section rest
+                             in (rest', "", S n)
+  N (E "title") [N (T title) []]:rest -> let (rest', _, n) = q5_section rest
+                                         in (rest', title, n)
+  node:rest -> q5_section rest

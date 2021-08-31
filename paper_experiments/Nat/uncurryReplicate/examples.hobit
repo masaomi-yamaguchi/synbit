@@ -1,0 +1,3 @@
+ex1 = (('a', S (S Z)), "bbb", ('b', S (S (S Z))))
+
+ex2 = ((True, S (S (S Z))), [False, False], (False, S (S Z)))

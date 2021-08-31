@@ -1,0 +1,19 @@
+data Nat = Z
+         | S Nat
+
+length :: [Nat] -> Nat
+length l = case l of
+  []   -> Z
+  x:xs -> S (length xs)
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

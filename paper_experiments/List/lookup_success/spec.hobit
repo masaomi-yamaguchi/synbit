@@ -1,0 +1,7 @@
+#funs = "funs.hobit"
+
+#root = lookup
+
+#nonRoots = eqNat, lookup_
+
+#examples = "examples.hobit"

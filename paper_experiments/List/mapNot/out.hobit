@@ -1,0 +1,38 @@
+mapNot :: BX [Bool] -> BX [Bool]
+mapNot = \l -> map (\a -> not a) l
+
+map :: (BX Bool -> BX Bool) -> BX [Bool] -> BX [Bool]
+map = \f -> \l -> case* l of
+                      [] ->
+                          ![]
+                          with (\x1 -> case x1 of
+                                           [] -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> [])
+                      x : xs ->
+                          (|f x : map f xs|)
+                          with (\x1 -> case x1 of
+                                           x2 : x3 -> True
+                                           _ -> False)
+                          reconciled by (\x0 -> \x1 -> case x1 of
+                                                           x2 : x3 -> True : x0)
+
+not :: BX Bool -> BX Bool
+not = \$0 -> case* $0 of
+                 True ->
+                     False
+                     with (\x1 -> case x1 of
+                                      False -> True
+                                      _ -> False)
+                     reconciled by (\x0 -> \x1 -> True)
+                 False ->
+                     True
+                     with (\x1 -> case x1 of
+                                      True -> True
+                                      _ -> False)
+                     reconciled by (\x0 -> \x1 -> False)
+
+-- time                 52.14 ms   (38.72 ms .. 68.48 ms)
+--                      0.726 R²   (0.509 R² .. 0.890 R²)
+-- mean                 37.69 ms   (30.29 ms .. 47.81 ms)
+-- std dev              17.48 ms   (12.81 ms .. 22.28 ms)

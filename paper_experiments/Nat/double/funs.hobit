@@ -1,0 +1,19 @@
+data Nat = Z
+         | S Nat
+
+double :: Nat -> Nat
+double n = case n of
+  Z   -> Z
+  S n -> S (S (double n))
+
+not :: Bool -> Bool
+not True = False
+not False = True
+
+andAlso :: Bool -> Bool -> Bool
+andAlso True True = True
+andAlso x y = False
+
+orElse :: Bool -> Bool -> Bool
+orElse False False = False
+orElse x y = True

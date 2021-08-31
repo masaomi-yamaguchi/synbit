@@ -1,0 +1,19 @@
+reverse :: BX [a] -> BX [a]
+reverse = \l -> revAppend Z ![] l
+
+revAppend :: Nat -> BX [a] -> BX [a] -> BX [a]
+revAppend = \n -> \e -> \l -> case* l of
+                                  [] ->
+                                      e
+                                      with (\x1 -> eqN n (length x1))
+                                      reconciled by (\x0 -> \x1 -> [])
+                                  x : xs ->
+                                      revAppend (S n) (|(x : e)|) xs
+                                      with (\x1 -> not (eqN n (length x1)))
+                                      reconciled by (\x0 -> \x1 -> x1)
+
+
+-- time                 1.262 s    (1.114 s .. 1.503 s)
+--                      0.995 R²   (0.993 R² .. 1.000 R²)
+-- mean                 1.311 s    (1.260 s .. 1.395 s)
+-- std dev              79.44 ms   (19.89 ms .. 103.7 ms)

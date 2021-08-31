@@ -1,0 +1,11 @@
+-- This is a specification file for synthesis.
+-- You need to put this file in the same directory as the files that function and examples are written.
+-- The order of #funs, #roots, #nonRoots #examples are fixed.
+--
+#funs = "funs.hobit"
+
+#root = appendBc
+
+#nonRoots = append
+
+#examples = "examples.hobit"

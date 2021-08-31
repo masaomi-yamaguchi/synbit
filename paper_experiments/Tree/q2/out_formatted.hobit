@@ -1,0 +1,69 @@
+q2 :: BX (Tree Lab) -> BX (Tree Lab)
+q2 = \t -> case* t of
+               N (E "book") ts ->
+                   N (E (|"figlist"|)) (q2_section ts)
+                   with (\x1 -> True)
+                   reconciled by (\x0 -> \x1 -> x0)
+
+append :: BX [Tree Lab] -> BX [Tree Lab] -> BX [Tree Lab]
+append = \l1 -> \l2 -> case* l1 of
+                           [] -> l2 with (\x1 -> True) reconciled by (\x0 -> \x1 -> [])
+                           x : xs ->
+                               (|x : append xs l2|)
+                               with (\x1 -> case x1 of
+                                                x2 : x3 -> True
+                                                _ -> False)
+                               reconciled by (\x0 -> \x1 -> case x1 of
+                                                                x2 : x3 -> x0)
+
+q2_fig_title_attr :: BX [Tree Lab] -> BX [Tree Lab]
+q2_fig_title_attr = \l -> case* l of
+                              [] ->
+                                  ![]
+                                  with (\x1 -> case x1 of
+                                                   [] -> True
+                                                   _ -> False)
+                                  reconciled by (\x0 -> \x1 -> [])
+                              N (E "title") title : rest ->
+                                  (|N (E (| "title" |)) title : q2_fig_title_attr rest|)
+                                  with (\x1 -> case x1 of
+                                                   N (E "title") x2 : x3 -> True
+                                                   _ -> False)
+                                  reconciled by (\x0 -> \x1 -> case x1 of
+                                                                   N (E "title") x2 : x3 -> x0)
+                              N (A a b) attr : rest ->
+                                  (|N (A a b) attr : q2_fig_title_attr rest|)
+                                  with (\x1 -> case x1 of
+                                                   N (A x2 x3) x4 : x5 -> True
+                                                   _ -> False)
+                                  reconciled by (\x0 -> \x1 -> case x1 of
+                                                                   N (A x2 x3) x4 : x5 ->
+                                                                       N (A x2 x2) x0 : x0)
+                              attr : rest ->
+                                  q2_fig_title_attr rest
+                                  with (\x1 -> True)
+                                  reconciled by (\x0 -> \x1 -> x0)
+
+q2_section :: BX [Tree Lab] -> BX [Tree Lab]
+q2_section = \l -> case* l of
+                       [] ->
+                           ![]
+                           with (\x1 -> case x1 of
+                                            [] -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> [])
+                       N (E "section") xs : rest ->
+                           append (q2_section xs) (q2_section rest)
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
+                       N (E "figure") attr_title : rest ->
+                           (|N (E (| "figure" |)) (q2_fig_title_attr attr_title) : q2_section rest|)
+                           with (\x1 -> case x1 of
+                                            N (E "figure") x2 : x3 -> True
+                                            _ -> False)
+                           reconciled by (\x0 -> \x1 -> case x1 of
+                                                            N (E "figure") x2 : x3 -> x0)
+                       node : rest ->
+                           q2_section rest
+                           with (\x1 -> True)
+                           reconciled by (\x0 -> \x1 -> x0)
