@@ -39,9 +39,7 @@ startREPL_ spec_path v funs_path root nonRoots examples_path = do
   let conf' = conf { verbosity = v }
   ref <- newIORef conf'
   let setting = HL.setComplete (replCompletion ref) HL.defaultSettings
-  homeDir <- getHomeDirectory
-  let histfilepath = homeDir </> ".HOBiT_history"
-  let setting' = setting { HL.historyFile = Just histfilepath }
+  let setting' = setting { HL.historyFile = Nothing  }
   HL.runInputT setting'
     $ runREPL
       (procLoadSynthesis_ funs_path (root:nonRoots)
